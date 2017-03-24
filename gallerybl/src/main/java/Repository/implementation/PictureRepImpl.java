@@ -1,0 +1,34 @@
+package Repository.implementation;
+
+import Repository.PictureRepository;
+import lt.insoft.training.insoft.training.model.Picture;
+
+import java.util.List;
+
+public class PictureRepImpl implements PictureRepository {
+
+    @Override
+    public List<Picture> getAllPictures() {
+        return null;
+    }
+
+    @Override
+    public Picture getPicture(Long id) {
+        return null;
+    }
+
+    @Override
+    public boolean updatePicture(Picture picture) {
+        return false;
+    }
+
+    @Override
+    public boolean insertPicture(Picture picture) {
+        return false;
+    }
+
+    @Override
+    public boolean removePicture(Picture picture) {
+        return false;
+    }
+}
