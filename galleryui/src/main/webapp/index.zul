@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
+    <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')">
+        <label value="@load(vm.name)"/>
+        <button onClick="@command('changeName')" label="New Order" />
+    </x:div>
+</zk>
