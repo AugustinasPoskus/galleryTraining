@@ -2,6 +2,18 @@
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
     <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')">
         <label value="@load(vm.name)"/>
-        <button onClick="@command('changeName')" label="New Order" />
+        <button onClick="@command('add')" label="New Order" />
+
+        <listbox height="160px" model="@bind(vm.folderList)" emptyMessage="No folder found in the result" style="margin-top:10px">
+            <listhead>
+                <listheader label="Name" />
+            </listhead>
+            <template name="model">
+                <listitem>
+                    <listcell label="@bind(each.name)"></listcell>
+                </listitem>
+            </template>
+        </listbox>
+        <image content="@bind(vm.image) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')" />
     </x:div>
 </zk>
