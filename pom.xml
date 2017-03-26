@@ -12,7 +12,7 @@
     <modules>
         <module>galleryui</module>
         <module>gallerybl</module>
-        <module>gallerymodule</module>
+        <module>gallerymodel</module>
     </modules>
 
     <properties>

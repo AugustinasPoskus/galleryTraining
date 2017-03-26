@@ -1,19 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
-    <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')">
-        <label value="@load(vm.name)"/>
-        <button onClick="@command('add')" label="New Order" />
+    <style src="css/style.css"/>
 
-        <listbox height="160px" model="@bind(vm.folderList)" emptyMessage="No folder found in the result" style="margin-top:10px">
-            <listhead>
-                <listheader label="Name" />
-            </listhead>
-            <template name="model">
-                <listitem>
-                    <listcell label="@bind(each.name)"></listcell>
-                </listitem>
+    <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')">
+        <button onClick="@command('add')" label="New Folder" />
+
+
+
+        <!--<listbox model="@bind(vm.folderList)" emptyMessage="No folder found in the result">-->
+            <!--<template name="model">-->
+                <!--<listitem>-->
+                    <!--<listcell class="picture">-->
+                        <!--<label value="@bind(each.name)"></label>-->
+                        <!--<image content="@bind(vm.image) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')" />-->
+                    <!--</listcell>-->
+                <!--</listitem>-->
+            <!--</template>-->
+        <!--</listbox>-->
+        <x:div class="folders" children="@load(vm.folderList)">
+            <template name="children">
+
+                <textbox disabled="true" value="@bind(each.name)"/>
+                <image content="@load(vm.image) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')" />
+                <!--<image src='../resources/folder.png'/>-->
             </template>
-        </listbox>
-        <image content="@bind(vm.image) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')" />
+        </x:div>
     </x:div>
+    <!--<script type="text/javascript" defer="true">-->
+        <!--zk.afterMount(function() {setupResultsClick();});-->
+        <!--function setupResultsClick() {-->
+        <!--document.getElementsByClassName("folderName").forEach(function(textarea) {-->
+        <!--textarea.live("dblclick", function() {-->
+        <!--this.setDisabled(!this.getDisabled());-->
+        <!--});-->
+        <!--});-->
+        <!--}-->
+
+    <!--</script>-->
 </zk>
