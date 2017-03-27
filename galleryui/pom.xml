@@ -50,6 +50,11 @@
             <artifactId>gallerymodel</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>lt.insoft.training</groupId>
+            <artifactId>gallerybl</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 

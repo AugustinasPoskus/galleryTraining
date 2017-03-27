@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
     <style src="css/style.css"/>
+    <script src="js/galleryJs.js"/>
 
     <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')">
         <button onClick="@command('add')" label="New Folder" />
-
-
-
         <!--<listbox model="@bind(vm.folderList)" emptyMessage="No folder found in the result">-->
             <!--<template name="model">-->
                 <!--<listitem>-->
@@ -19,13 +17,13 @@
         <!--</listbox>-->
         <x:div class="folders" children="@load(vm.folderList)">
             <template name="children">
-
-                <textbox disabled="true" value="@bind(each.name)"/>
-                <image content="@load(vm.image) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')" />
-                <!--<image src='../resources/folder.png'/>-->
+                <!--<textbox disabled="true" value="@bind(each.name)"/>-->
+                <!--<image content="@load(vm.image) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')" />-->
+                <image src='resources/folder.png' onClick="myFunction(each.name)"/>
             </template>
         </x:div>
     </x:div>
+
     <!--<script type="text/javascript" defer="true">-->
         <!--zk.afterMount(function() {setupResultsClick();});-->
         <!--function setupResultsClick() {-->

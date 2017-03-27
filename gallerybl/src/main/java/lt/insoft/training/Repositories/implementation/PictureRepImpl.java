@@ -1,6 +1,6 @@
-package Repository.implementation;
+package lt.insoft.training.Repositories.implementation;
 
-import Repository.PictureRepository;
+import lt.insoft.training.Repositories.PictureRepository;
 import lt.insoft.training.insoft.training.model.Picture;
 
 import java.util.List;

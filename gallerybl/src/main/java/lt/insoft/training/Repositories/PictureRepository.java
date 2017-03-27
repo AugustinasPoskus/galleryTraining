@@ -1,6 +1,7 @@
-package Repository;
+package lt.insoft.training.Repositories;
 
 import lt.insoft.training.insoft.training.model.Picture;
+
 import java.util.List;
 
 public interface PictureRepository {

@@ -19,7 +19,7 @@
         <zk.version>8.0.2.2</zk.version>
         <junit.version>4.12</junit.version>
         <hibernate-jpa.version>1.0.0.Final</hibernate-jpa.version>
-        <hibernate-core.version>5.2.9.Final</hibernate-core.version>
+        <hibernate-core.version>5.2.7.Final</hibernate-core.version>
         <oracle.jdbc.version>11.2.0.3</oracle.jdbc.version>
         <lombok.version>1.16.14</lombok.version>
         <spring.version>4.3.7.RELEASE</spring.version>
@@ -27,6 +27,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>2.2.2</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework</groupId>
