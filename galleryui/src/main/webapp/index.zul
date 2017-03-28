@@ -1,38 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
-    <style src="css/style.css"/>
     <script src="js/galleryJs.js"/>
+    <x:link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style src="css/style.css"/>
 
     <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')">
         <button onClick="@command('add')" label="New Folder" />
-        <!--<listbox model="@bind(vm.folderList)" emptyMessage="No folder found in the result">-->
-            <!--<template name="model">-->
-                <!--<listitem>-->
-                    <!--<listcell class="picture">-->
-                        <!--<label value="@bind(each.name)"></label>-->
-                        <!--<image content="@bind(vm.image) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')" />-->
-                    <!--</listcell>-->
-                <!--</listitem>-->
-            <!--</template>-->
-        <!--</listbox>-->
-        <x:div class="folders" children="@load(vm.folderList)">
+        <x:div class="folders" children="@bind(vm.folderList)">
             <template name="children">
-                <!--<textbox disabled="true" value="@bind(each.name)"/>-->
+                <textbox disabled="true" value="@bind(each.id)"/>
+                <button sclass="delete" onClick="@command('remove', id=each.id)">&#10006;</button>
                 <!--<image content="@load(vm.image) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')" />-->
-                <image src='resources/folder.png' onClick="myFunction(each.name)"/>
+                <image src='resources/folder.png' onClick="@command('open', id=each.id)"/>
             </template>
         </x:div>
     </x:div>
 
-    <!--<script type="text/javascript" defer="true">-->
-        <!--zk.afterMount(function() {setupResultsClick();});-->
-        <!--function setupResultsClick() {-->
-        <!--document.getElementsByClassName("folderName").forEach(function(textarea) {-->
-        <!--textarea.live("dblclick", function() {-->
-        <!--this.setDisabled(!this.getDisabled());-->
-        <!--});-->
-        <!--});-->
-        <!--}-->
-
-    <!--</script>-->
 </zk>

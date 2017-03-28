@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface FolderRepository {
     public List<Folder> getAllFolders();
-    public Folder getFolderById(Integer id);
-    public boolean removeFolder(Integer id);
+    public Folder getFolderById(Long id);
+    public boolean removeFolder(Long id);
     public boolean addFolder(Folder folder);
 }

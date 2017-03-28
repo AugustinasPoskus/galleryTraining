@@ -7,6 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.List;
 
@@ -24,12 +28,19 @@ public class FolderRepImp implements FolderRepository {
     @Transactional(readOnly=true)
     public List<Folder> getAllFolders()
     {
-        List<Folder> folders = manager.createQuery("Select f From Folder a", Folder.class).getResultList();
+        CriteriaBuilder cb = manager.getCriteriaBuilder();
+        CriteriaQuery<Folder> cq = cb.createQuery(Folder.class);
+        Root<Folder> from = cq.from(Folder.class);
+        cq.select(from);
+        TypedQuery<Folder> q = manager.createQuery(cq);
+        List<Folder> folders = q.getResultList();
+
+        //List<Folder> folders = manager.createQuery("Select f From Folder f", Folder.class).getResultList();
         return folders;
     }
 
     @Transactional
-    public boolean removeFolder(Integer id)
+    public boolean removeFolder(Long id)
     {
         Folder folderInstance = this.getFolderById(id);
         if (folderInstance != null) {
@@ -40,7 +51,7 @@ public class FolderRepImp implements FolderRepository {
     }
 
     @Transactional(readOnly=true)
-    public Folder getFolderById(Integer id)
+    public Folder getFolderById(Long id)
     {
         return manager.find(Folder.class, id);
     }

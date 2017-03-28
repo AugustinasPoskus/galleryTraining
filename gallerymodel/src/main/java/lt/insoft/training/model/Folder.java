@@ -15,7 +15,7 @@ public class Folder {
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "DATE")
+    @Column(name = "INSERT_DATE")
     private Date date;
 
     public Long getId() {

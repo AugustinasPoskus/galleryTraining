@@ -7,8 +7,9 @@ import java.util.List;
 
 public class PictureRepImpl implements PictureRepository {
 
+
     @Override
-    public List<Picture> getAllPictures() {
+    public List<Picture> getPictures(int from, int amount) {
         return null;
     }
 

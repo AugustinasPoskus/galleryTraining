@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface PictureRepository {
 
-    public List<Picture> getAllPictures();
+    public List<Picture> getPictures(int from, int amount);
     public Picture getPicture(Long id);
     public boolean updatePicture(Picture picture);
     public boolean insertPicture(Picture picture);

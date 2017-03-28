@@ -9,19 +9,17 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service("folderService")
 @Scope(value="singleton",proxyMode=ScopedProxyMode.TARGET_CLASS)
-public class FolderService implements IFolderService,Serializable {
+public class FolderService implements IFolderService {
 
 
     @Autowired
     private FolderRepository folderRep;
 
     public FolderService(){
-        folderRep = new FolderRepImp();
     }
 
     public List<Folder> getAllFolders(){
@@ -32,8 +30,8 @@ public class FolderService implements IFolderService,Serializable {
         return folderRep.addFolder(folder);
     }
 
-    public void check(){
-        System.out.println("hey");
+    public boolean removeFolder(Long id){
+        return folderRep.removeFolder(id);
     }
 
 }
