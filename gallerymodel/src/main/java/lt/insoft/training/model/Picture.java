@@ -7,11 +7,12 @@ import java.util.Date;
 @Table(name = "AU_PICTURE")
 public class Picture {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID")
     private Long id;
 
     @Column(name = "DATE_INSERT")
+    @Temporal(TemporalType.DATE)
     private Date date;
 
     @Column(name = "QUALITY")
@@ -23,11 +24,13 @@ public class Picture {
     @Column(name = "DESCRIPTION")
     private String desciption;
 
-    @Column(name = "DATA_ID")
-    private Long dataId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "DATA_ID")
+    private PictureData pictureData;
 
-    @Column(name = "FOLDER_ID")
-    private Long folderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FOLER_ID", nullable = false)
+    private Folder folder;
 
     public Long getId() {
         return id;
@@ -69,22 +72,14 @@ public class Picture {
         this.desciption = desciption;
     }
 
-    public Long getPictureId() {
-        return dataId;
-    }
-
-    public Long getFolderId() {
-        return folderId;
-    }
-
-    public void setFolderId(Long folderId) {
-        this.folderId = folderId;
-    }
-
-    public void setPictureId(Long pictureId) {
-        this.dataId = pictureId;
-    }
-
     public Picture() {}
+
+    public PictureData getPictureData() {
+        return pictureData;
+    }
+
+    public void setPictureData(PictureData pictureData) {
+        this.pictureData = pictureData;
+    }
 
 }

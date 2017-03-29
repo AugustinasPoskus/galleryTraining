@@ -12,8 +12,8 @@ import java.io.Serializable;
 import java.util.List;
 
 @Service("folderService")
-@Scope(value="singleton",proxyMode=ScopedProxyMode.TARGET_CLASS)
-public class FolderService implements IFolderService {
+@Scope(value="singleton")
+public class FolderService {
 
 
     @Autowired
@@ -32,6 +32,10 @@ public class FolderService implements IFolderService {
 
     public boolean removeFolder(Long id){
         return folderRep.removeFolder(id);
+    }
+
+    public boolean updateFolder(Long id, String name){
+        return folderRep.updateFolder(id,name);
     }
 
 }

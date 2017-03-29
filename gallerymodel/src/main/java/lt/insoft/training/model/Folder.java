@@ -2,13 +2,15 @@ package lt.insoft.training.model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "AU_FOLDER")
 public class Folder {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID")
     private Long id;
 
@@ -16,7 +18,11 @@ public class Folder {
     private String name;
 
     @Column(name = "INSERT_DATE")
+    @Temporal(TemporalType.DATE)
     private Date date;
+
+    public Folder() {
+    }
 
     public Long getId() {
         return id;
@@ -41,5 +47,4 @@ public class Folder {
     public void setDate(Date date) {
         this.date = date;
     }
-
 }

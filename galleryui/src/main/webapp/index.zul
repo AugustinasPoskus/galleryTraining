@@ -2,20 +2,89 @@
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
     <script src="js/galleryJs.js"/>
     <x:link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <x:link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style src="css/style.css"/>
+    <style>
+        .buttons {
+            width:100%;
+            position: absolute;
+            top: 10%;
+            left: 30%;
+        }
+        .caption {
+            width:100%;
+            position: absolute;
+            top: 50%;
+        }
+        .col-lg-3 {
+            padding-bottom: 20px;
+        }
+        .container {
+            width:100%;
+        }
+        .thumbnail {
+            background-color: transparent;
+            border: 0 none;
+            margin:0;
+            padding:0;
+        }
+
+        .caption .folderName {
+            color: #fff;
+            font-size: 200%;
+            -webkit-font-smoothing: antialiased;
+        }
+        .buttons i{
+            cursor: pointer;
+        }
+    </style>
 
     <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')">
         <button onClick="@command('add')" label="New Folder" />
-        <x:div class="folders" children="@bind(vm.folderList)">
-            <template name="children">
-                <textbox disabled="true" value="@bind(each.id)"/>
-                <button sclass="delete" onClick="@command('remove', id=each.id)">&#10006;</button>
-                <!--<image content="@load(vm.image) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')" />-->
-                <image src='resources/folder.png' onClick="@command('open', id=each.id)"/>
-            </template>
+        <!--</x:div>-->
+        <!--<x:div class="folders" children="@bind(vm.folderList)">-->
+            <!--<template name="children">-->
+                <!--<textbox disabled="true" value="@bind(each.id)"/>-->
+                <!--<button sclass="delete" onClick="@command('remove', id=each.id)">&#10006;</button>-->
+                <!--<image src='resources/folder.png' onClick="@command('open', id=each.id)"/>-->
+            <!--</template>-->
+        <!--</x:div>-->
+        <x:div class="container">
+            <x:div class=" col-lg-12 row" children="@bind(vm.folderList)">
+                <template name="children">
+                    <x:div class="col-lg-3">
+                        <x:div class="col-lg-12 thumbnail text-center">
+                            <x:div class="buttons">
+                                <x:i class="material-icons" style="font-size:36px"  data-toggle="modal" data-target="#myModal">edit</x:i>
+                                <x:i class="material-icons" style="font-size:36px" onClick="@command('remove', id=each.id)">delete</x:i>
+                            </x:div>
+                            <x:div class="caption">
+                                <label sclass="folderName" value="@bind(each.name)"/>
+                            </x:div>
+                            <x:img alt="" class="img-responsive" src='resources/folder.png' onClick="@command('open', id=each.id)"/>
+                        </x:div>
+                    </x:div>
+                </template>
+            </x:div>
+        </x:div>
+        <x:div id="myModal" class="modal fade" role="dialog">
+            <x:div class="modal-dialog">
+                <x:div class="modal-content">
+                    <x:div class="modal-header">
+                        <x:button type="button" class="close" data-dismiss="modal">&#10006;</x:button>
+                        <x:h4 class="modal-title">Please enter new folder name: </x:h4>
+                    </x:div>
+                    <x:div class="modal-body">
+                        <textbox type="text" sclass="form-control" id="usr"/>
+                    </x:div>
+                    <x:div class="modal-footer">
+                        <x:button type="button" class="btn btn-default" data-dismiss="modal" onClick="@command('editFolderName', id=each.id)">Save</x:button>
+                    </x:div>
+                </x:div>
+
+            </x:div>
         </x:div>
     </x:div>
-
 </zk>

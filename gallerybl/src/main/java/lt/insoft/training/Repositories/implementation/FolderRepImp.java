@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -18,30 +19,22 @@ import java.util.List;
 @Transactional
 public class FolderRepImp implements FolderRepository {
 
+    @PersistenceContext
     private EntityManager manager;
 
-    @PersistenceContext
-    public void setEntityManager(EntityManager entityManager) {
-        this.manager = entityManager;
-    }
-
-    @Transactional(readOnly=true)
-    public List<Folder> getAllFolders()
-    {
+    @Transactional(readOnly = true)
+    public List<Folder> getAllFolders() {
         CriteriaBuilder cb = manager.getCriteriaBuilder();
         CriteriaQuery<Folder> cq = cb.createQuery(Folder.class);
         Root<Folder> from = cq.from(Folder.class);
         cq.select(from);
         TypedQuery<Folder> q = manager.createQuery(cq);
         List<Folder> folders = q.getResultList();
-
-        //List<Folder> folders = manager.createQuery("Select f From Folder f", Folder.class).getResultList();
         return folders;
     }
 
     @Transactional
-    public boolean removeFolder(Long id)
-    {
+    public boolean removeFolder(Long id) {
         Folder folderInstance = this.getFolderById(id);
         if (folderInstance != null) {
             manager.remove(folderInstance);
@@ -50,23 +43,33 @@ public class FolderRepImp implements FolderRepository {
         return false;
     }
 
-    @Transactional(readOnly=true)
-    public Folder getFolderById(Long id)
-    {
+    @Transactional(readOnly = true)
+    public Folder getFolderById(Long id) {
         return manager.find(Folder.class, id);
     }
 
     @Transactional
-    public boolean addFolder(Folder folder)
-    {
-        if(!folder.getName().equals(null))
-        {
+    public boolean addFolder(Folder folder) {
+        if (!folder.getName().equals(null)) {
             Date date = new Date();
             folder.setDate(date);
             manager.persist(folder);
             return true;
         }
         return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean updateFolder(Long id, String name) {
+        try {
+            Folder folder = this.getFolderById(id);
+            folder.setName(name);
+            manager.merge(folder);
+            return true;
+        } catch (PersistenceException pe) {
+            return false;
+        }
     }
 
 }

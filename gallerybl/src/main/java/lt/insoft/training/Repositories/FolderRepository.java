@@ -10,4 +10,5 @@ public interface FolderRepository {
     public Folder getFolderById(Long id);
     public boolean removeFolder(Long id);
     public boolean addFolder(Folder folder);
+    public boolean updateFolder(Long id, String name);
 }

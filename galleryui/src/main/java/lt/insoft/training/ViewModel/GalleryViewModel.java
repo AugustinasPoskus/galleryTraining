@@ -1,7 +1,7 @@
 package lt.insoft.training.ViewModel;
 
 import lt.insoft.training.model.Folder;
-import lt.insoft.training.services.IFolderService;
+import lt.insoft.training.services.FolderService;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
@@ -19,7 +19,7 @@ public class GalleryViewModel {
     private List<Folder> folderList;
 
     @WireVariable
-    private IFolderService folderService;
+    private FolderService folderService;
 
     @Init
     public void init() {
@@ -48,6 +48,20 @@ public class GalleryViewModel {
         if(this.containsId(id)){
             if(folderService.removeFolder(id)){
                 folderList.removeIf(p -> p.getId().equals(id));
+            }
+        }
+    }
+
+    @Command
+    @NotifyChange("folderList")
+    public void editFolderName(@BindingParam("id") Long id){
+        if(this.containsId(id)){
+            if(folderService.updateFolder(id, "naujas")){
+                for(Folder folder : folderList) {
+                    if(folder.getId().equals(id)) {
+                        folder.setName("naujas");
+                    }
+                }
             }
         }
     }

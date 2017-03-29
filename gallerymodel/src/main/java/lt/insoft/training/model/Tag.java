@@ -8,7 +8,7 @@ import java.util.Set;
 public class Tag {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID")
     private Long id;
 
@@ -33,8 +33,6 @@ public class Tag {
         this.name = name;
     }
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "AU_PICTURE_TAG", joinColumns = { @JoinColumn(name = "PICTURE_ID") }, inverseJoinColumns = { @JoinColumn(name = "TAG_ID") })
     public Set<Picture> getPictures() {
         return pictures;
     }
