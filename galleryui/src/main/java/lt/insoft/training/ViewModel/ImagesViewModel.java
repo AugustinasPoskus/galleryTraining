@@ -21,6 +21,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
 public class ImagesViewModel {
@@ -32,19 +33,15 @@ public class ImagesViewModel {
     private PictureService pictureService;
     private List<PictureData> pictureDataList;
     private byte[] image = this.getFileBytes();
-    private Long value;
+    private Long folderId;
 
     @Init
     public void init() {
-        Session session = Sessions.getCurrent();
-        if (session.hasAttribute("id")) {
-            value = (Long) session.getAttribute("id");
-        }
         pictureDataList = pictureDataService.getPictureData(0,10);
     }
 
     public Long getValue() {
-        return value;
+        return folderId;
     }
 
     public List<PictureData> getPictureDataList() {
@@ -52,7 +49,7 @@ public class ImagesViewModel {
     }
 
     public void setValue(Long value) {
-        this.value = value;
+        this.folderId = value;
     }
 
     private byte[] getFileBytes() {
@@ -68,12 +65,14 @@ public class ImagesViewModel {
     }
 
     @Command
-    public void doUploadFile(@BindingParam("file") Media photo) throws SQLException {
-        if (!photo.getContentType().startsWith("image/")) {
-            Messagebox.show("Not an image: "+photo, "Error", Messagebox.OK, Messagebox.ERROR);
-            return;
+    public void doUploadFile(@BindingParam("file") Media photo) {
+        if(!photo.equals(null)) {
+            if (!photo.getContentType().startsWith("image/")) {
+                Messagebox.show("Not an image: " + photo, "Error", Messagebox.OK, Messagebox.ERROR);
+                return;
+            }
+            this.photo = photo.getByteData();
         }
-        this.photo = photo.getByteData();
     }
 
     @Command

@@ -5,8 +5,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.ImagesViewModel',id=arg.id)">
-        <label value="@load(vm.value)"/>
+    <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.ImagesViewModel')">
+        <!--<label value="@load(vm.folderId)"/>-->
         <x:div class="container">
             <x:button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Upload picture</x:button>
             <x:div class="modal fade" id="myModal" role="dialog">
@@ -25,7 +25,7 @@
                                 <x:label for="imageInfo">Image description:</x:label>
                                 <x:input type="password" class="form-control" id="pwd"/>
                             </x:div>
-                            <button label="Upload Image" upload="true,maxsize=3000 multiple=false,native" onUpload="@command('doUploadFile', file=event.media)"/>
+                            <button label="Upload Image" upload="true,maxsize=3000,multiple=false" onUpload="@command('doUploadFile', file=event.media)"/>
                             <label id="attachmentFileName" style="font-weight:bold;"/>
                         </x:div>
                         <x:div class="modal-footer">

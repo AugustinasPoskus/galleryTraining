@@ -59,7 +59,6 @@ public class FolderRepImp implements FolderRepository {
         return false;
     }
 
-    @Override
     @Transactional
     public boolean updateFolder(Long id, String name) {
         try {
