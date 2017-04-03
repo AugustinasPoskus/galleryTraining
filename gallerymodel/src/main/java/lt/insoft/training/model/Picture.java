@@ -24,13 +24,13 @@ public class Picture {
     @Column(name = "DESCRIPTION")
     private String desciption;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "DATA_ID")
     private PictureData pictureData;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FOLER_ID", nullable = false)
-    private Folder folder;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "FOLER_ID", nullable = false)
+//    private Folder folder;
 
     public Long getId() {
         return id;

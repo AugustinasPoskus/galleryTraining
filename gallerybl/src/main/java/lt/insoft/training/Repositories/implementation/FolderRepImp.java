@@ -2,6 +2,7 @@ package lt.insoft.training.Repositories.implementation;
 
 import lt.insoft.training.Repositories.FolderRepository;
 import lt.insoft.training.model.Folder;
+import lt.insoft.training.model.PictureData;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +23,20 @@ public class FolderRepImp implements FolderRepository {
     @PersistenceContext
     private EntityManager manager;
 
-    @Transactional(readOnly = true)
-    public List<Folder> getAllFolders() {
-        CriteriaBuilder cb = manager.getCriteriaBuilder();
-        CriteriaQuery<Folder> cq = cb.createQuery(Folder.class);
-        Root<Folder> from = cq.from(Folder.class);
-        cq.select(from);
-        TypedQuery<Folder> q = manager.createQuery(cq);
-        List<Folder> folders = q.getResultList();
-        return folders;
+    @Transactional
+    public List<Folder> getFolders(int from, int amount) {
+        if((from >=0) && (amount > 0)) {
+            CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+            CriteriaQuery<Folder> criteriaQuery = criteriaBuilder.createQuery(Folder.class);
+            Root<Folder> fromSql = criteriaQuery.from(Folder.class);
+            CriteriaQuery<Folder> select = criteriaQuery.select(fromSql);
+            TypedQuery<Folder> typedQuery = manager.createQuery(select);
+            typedQuery.setFirstResult(from);
+            typedQuery.setMaxResults(amount);
+            List<Folder> folders = typedQuery.getResultList();
+            return folders;
+        }
+        return null;
     }
 
     @Transactional
@@ -45,7 +51,10 @@ public class FolderRepImp implements FolderRepository {
 
     @Transactional(readOnly = true)
     public Folder getFolderById(Long id) {
-        return manager.find(Folder.class, id);
+        if(!id.equals(null)){
+            return manager.find(Folder.class, id);
+        }
+        return null;
     }
 
     @Transactional
@@ -69,6 +78,13 @@ public class FolderRepImp implements FolderRepository {
         } catch (PersistenceException pe) {
             return false;
         }
+    }
+
+    public int getFoldersCount() {
+        CriteriaBuilder qb = manager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(Folder.class)));
+        return (int) (long) manager.createQuery(cq).getSingleResult();
     }
 
 }

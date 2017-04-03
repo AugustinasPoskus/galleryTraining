@@ -16,6 +16,9 @@ public class PictureData {
     @Column(name = "DATA")
     private byte[] data;
 
+    @Column(name = "THUMBNAIL")
+    private byte[] thumbnail;
+
     public Long getId() {
         return id;
     }
@@ -34,4 +37,11 @@ public class PictureData {
 
     public PictureData() {}
 
+    public byte[] getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(byte[] thumbnail) {
+        this.thumbnail = thumbnail;
+    }
 }

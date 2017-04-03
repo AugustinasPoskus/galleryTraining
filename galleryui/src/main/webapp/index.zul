@@ -1,57 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
-    <script src="js/galleryJs.js"/>
+
     <x:link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
     <x:link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <style>
-        .boldLabel{
-            font-weight: bold;
-        }
-        .buttons {
-            width:100%;
-            position: absolute;
-            top: 10%;
-            left: 23%;
-        }
-        .caption {
-            width:100%;
-            position: absolute;
-            top: 50%;
-        }
-        .col-lg-2 {
-            padding-bottom: 20px;
-        }
-        .container {
-            width:100%;
-        }
-        .thumbnail {
-            background-color: transparent;
-            border: 0 none;
-            margin:0;
-            padding:0;
-        }
-
-        .caption .folderName {
-            color: #fff;
-            font-size: 200%;
-            -webkit-font-smoothing: antialiased;
-        }
-        .buttons i{
-            cursor: pointer;
-        }
-        .material-icons{
-            style="font-size:24px";
-        }
-        .buttonHolder{
-            padding-top: 20px;
-            text-align: center;
-        }
-    </style>
-    <style src="css/style.css"/>
-
+    <style src="resources/css/custom.css"/>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.0.min.js"/>
+    <script src="resources/js/galleryJs.js"></script>
     <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')">
         <x:div class="buttonHolder">
             <x:a class="btn icon-btn btn-success" onClick="@command('add')">
@@ -59,14 +16,6 @@
                 Add New Folder
             </x:a>
         </x:div>
-        <!--</x:div>-->
-        <!--<x:div class="folders" children="@bind(vm.folderList)">-->
-            <!--<template name="children">-->
-                <!--<textbox disabled="true" value="@bind(each.id)"/>-->
-                <!--<button sclass="delete" onClick="@command('remove', id=each.id)">&#10006;</button>-->
-                <!--<image src='resources/folder.png' onClick="@command('open', id=each.id)"/>-->
-            <!--</template>-->
-        <!--</x:div>-->
         <x:div class="container">
             <x:div class=" col-lg-12 row" children="@bind(vm.folderList)">
                 <template name="children">
@@ -85,6 +34,14 @@
                 </template>
             </x:div>
         </x:div>
+        <label id="vba" value="folderCount:"/>
+        <label value="@bind(vm.foldersCount)"/>
+        <label value="folderCount:"/>
+        <label value="@bind(vm.pagesCount)" sclass ="pagesCount"/>
+        <x:button type="button" onclick="myFunction()">Try it</x:button>
+        <x:ul class="pagination">
+            <x:li>fd</x:li>
+        </x:ul>
         <x:div id="changeFolderNameModal" class="modal fade" role="dialog">
             <x:div class="modal-dialog">
                 <x:div class="modal-content">

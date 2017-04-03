@@ -16,9 +16,9 @@ public class PictureService {
 
     public PictureService(){}
 
-    public Picture getPicture(Long id)
+    public Picture getPictureByDataId(Long id)
     {
-        return pictureRep.getPicture(id);
+        return pictureRep.getPictureByDataId(id);
     }
     public Long addPicture(Picture picture)
     {

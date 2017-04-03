@@ -17,10 +17,16 @@ public class PictureDataService {
 
     public PictureDataService(){}
 
-    public List<PictureData> getPictureData(int from, int amount)
+    public PictureData getPictureData(Long id)
     {
-        return pictureDataRep.getPicturesData(from, amount);
+        return pictureDataRep.getPictureData(id);
     }
+
+    public List<PictureData> getPictureThumbnail(int from, int amount)
+    {
+        return pictureDataRep.getPicturesThumbnails(from, amount);
+    }
+
     public Long addPictureData(PictureData pictureData)
     {
         return pictureDataRep.insertPictureData(pictureData);

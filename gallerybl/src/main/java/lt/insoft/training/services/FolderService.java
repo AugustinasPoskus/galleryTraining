@@ -22,8 +22,8 @@ public class FolderService {
     public FolderService(){
     }
 
-    public List<Folder> getAllFolders(){
-        return folderRep.getAllFolders();
+    public List<Folder> getFolders(int from, int amount){
+        return folderRep.getFolders(from, amount);
     }
 
     public boolean addFolder(Folder folder){
@@ -37,5 +37,7 @@ public class FolderService {
     public boolean updateFolder(Long id, String name){
         return folderRep.updateFolder(id,name);
     }
-
+    public int foldersCount(){
+        return folderRep.getFoldersCount();
+    }
 }
