@@ -79,8 +79,8 @@ public class ImagesViewModel {
 
     @Command
     public void open(@BindingParam("id") Long id){
-        Picture picture = pictureService.getPictureByDataId(id);
-        System.out.println(id+ " " + picture.getName() + " " + picture.getDesciption());
+        //Picture picture = pictureService.getPictureByDataId(id);
+        //System.out.println(id+ " " + picture.getName() + " " + picture.getDesciption());
     }
 
     @Command

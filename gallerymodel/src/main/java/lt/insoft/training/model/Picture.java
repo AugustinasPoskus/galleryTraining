@@ -24,7 +24,7 @@ public class Picture {
     @Column(name = "DESCRIPTION")
     private String desciption;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "DATA_ID")
     private PictureData pictureData;
 

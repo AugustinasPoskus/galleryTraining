@@ -11,4 +11,5 @@ public interface PictureRepository {
     public boolean updatePicture(Picture picture);
     public Long insertPicture(Picture picture);
     public boolean removePicture(Long id);
+    public Picture findPictureByDataId(Long id);
 }

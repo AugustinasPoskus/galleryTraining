@@ -35,10 +35,19 @@ public class PictureRepImpl implements PictureRepository {
     }
 
     @Transactional(readOnly=true)
-    public Picture getPictureByDataId(Long id) {
-        CriteriaBuilder builder = manager.getCriteriaBuilder();
-        CriteriaQuery<Picture> criteriaQuery = builder.createQuery(Picture.class);
-        criteria.add(Restrictions.isNull("a.id"));
+    public PictureData getPictureData(Long id) {
+        return manager.find(PictureData.class, id);
+    }
+
+    public Picture findPictureByDataId(Long id) {
+//        PictureData pd = this.getPictureData(id);
+//        CriteriaBuilder builder = manager.getCriteriaBuilder();
+//        CriteriaQuery<Picture> criteria = builder.createQuery(Picture.class);
+//        Root<Picture> from = criteria.from(Picture.class);
+//        criteria.select(from);
+//        criteria.where(builder.equals(from.get(PictureData_.id), pd));
+//        TypedQuery<User> typed = manager.createQuery(criteria);
+        return null;
     }
 
     @Transactional
