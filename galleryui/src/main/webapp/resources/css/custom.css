@@ -1,3 +1,14 @@
+        .disabled>.page-link {
+            cursor: default;
+            pointer-events: none;
+        }
+        .page {
+            padding: 70px 0;
+            text-align: center;
+        }
+        .paginationNav{
+            text-align: center;
+        }
         .boldLabel{
             font-weight: bold;
         }
@@ -40,4 +51,5 @@
             padding-top: 20px;
             text-align: center;
         }
+
 

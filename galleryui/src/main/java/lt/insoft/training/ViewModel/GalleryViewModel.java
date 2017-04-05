@@ -3,12 +3,11 @@ package lt.insoft.training.ViewModel;
 import lt.insoft.training.model.Folder;
 import lt.insoft.training.services.FolderService;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zkoss.bind.annotation.BindingParam;
-import org.zkoss.bind.annotation.Command;
-import org.zkoss.bind.annotation.Init;
-import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.bind.annotation.*;
+import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
+import org.zkoss.zk.ui.util.Clients;
 
 import java.util.List;
 
@@ -20,47 +19,76 @@ public class GalleryViewModel {
     private FolderService folderService;
     private int foldersCount = 0;
     private int currentPage = 1;
-    private int paginationBy = 10;
+    private final int paginationBy = 6;
     private int pagesCount;
 
     @Init
-    public void init() {
+    public void init(@ContextParam(ContextType.EXECUTION) Execution execution) {
         foldersCount = folderService.foldersCount();
-        folderList = folderService.getFolders(0,paginationBy);
         this.calculatePages();
+        String page = execution.getParameter("page");
+        if (page != null) {
+            if (page.equals("next") && (currentPage + 1) != pagesCount) {
+                currentPage = currentPage + 1;
+            } else if (page.equals("previous") && (currentPage - 1) != 0) {
+                currentPage = currentPage - 1;
+            } else {
+                try {
+                    currentPage = Integer.parseInt(page);
+                    System.out.println("current page:" + currentPage + "pages count: " + pagesCount);
+                    if (currentPage > pagesCount || (currentPage <= 0)) {
+                        currentPage = 1;
+                    }
+                } catch (NumberFormatException ex) {
+                    System.out.println("Page not found!");
+                    currentPage = 1;
+                }
+            }
+        }
+        int firstFolderIndex = (currentPage - 1) * paginationBy;
+        folderList = folderService.getFolders(firstFolderIndex, paginationBy);
+        Clients.evalJavaScript("pagination(" + this.pagesCount + "," + currentPage + ");");
     }
 
     @Command
-    public void open(@BindingParam("id") Long id){
+    public void open(@BindingParam("id") Long id) {
         Executions.sendRedirect(UriComponentsBuilder.fromUriString("images.zul").queryParam("folderId", id).build().encode().toString());
     }
 
     @Command
     @NotifyChange({"folderList", "foldersCount", "pagesCount"})
-    public void add(){
+    public void add() {
         Folder folder = new Folder();
         folder.setName("Unnamed");
         folderService.addFolder(folder);
-        folderList.add(folder);
+        if (folderList.size() < paginationBy) {
+            folderList.add(folder);
+        }
         foldersCount++;
         this.calculatePages();
+        Clients.evalJavaScript("paginationChange(" + this.pagesCount + ");");
     }
 
     @Command
     @NotifyChange({"folderList", "foldersCount", "pagesCount"})
-    public void remove(@BindingParam("id") Long id){
-        if(this.containsId(id)){
-            if(folderService.removeFolder(id)){
+    public void remove(@BindingParam("id") Long id) {
+        if (this.containsId(id)) {
+            if (folderService.removeFolder(id)) {
                 folderList.removeIf(p -> p.getId().equals(id));
                 foldersCount--;
+                System.out.println("folderCount: " + foldersCount + " folder List size : " + ((currentPage - 1) * paginationBy + folderList.size()));
+                if (foldersCount > (currentPage - 1) * paginationBy + folderList.size()) {
+                    folderList.add(folderService.getFolders(paginationBy - 1, 1).get(0));
+                }
                 this.calculatePages();
+                Clients.evalJavaScript("paginationChange(" + this.pagesCount + ");");
             }
         }
     }
 
     @Command
     @NotifyChange("folderList")
-    public void editFolderName(){
+    public void editFolderName() {
         if (this.containsId(this.selectedId) && !(this.folderName.equals(""))) {
             if (folderService.updateFolder(this.selectedId, this.folderName)) {
                 for (Folder folder : folderList) {
@@ -72,11 +100,11 @@ public class GalleryViewModel {
         }
     }
 
-    public List<Folder> getFolderList(){
+    public List<Folder> getFolderList() {
         return folderList;
     }
 
-    public boolean containsId( Long id) {
+    public boolean containsId(Long id) {
         List<Folder> list = this.getFolderList();
         for (Folder object : list) {
             if (object.getId() == id) {
@@ -91,7 +119,7 @@ public class GalleryViewModel {
     }
 
     public void setFolderName(String folderName) {
-            this.folderName = folderName;
+        this.folderName = folderName;
     }
 
     public Long getSelectedId() {
@@ -117,11 +145,11 @@ public class GalleryViewModel {
         this.foldersCount = foldersCount;
     }
 
-    private void calculatePages(){
-        if(foldersCount%paginationBy == 0){
-            pagesCount = foldersCount/paginationBy;
-        }else{
-            pagesCount = foldersCount/paginationBy + 1;
+    private void calculatePages() {
+        if (foldersCount % paginationBy == 0) {
+            this.pagesCount = foldersCount / paginationBy;
+        } else {
+            this.pagesCount = foldersCount / paginationBy + 1;
         }
     }
 
@@ -132,4 +160,14 @@ public class GalleryViewModel {
     public void setPagesCount(int pagesCount) {
         this.pagesCount = pagesCount;
     }
+
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
 }

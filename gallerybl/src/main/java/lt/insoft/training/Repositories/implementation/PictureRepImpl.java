@@ -11,10 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +44,15 @@ public class PictureRepImpl implements PictureRepository {
 //        criteria.select(from);
 //        criteria.where(builder.equals(from.get(PictureData_.id), pd));
 //        TypedQuery<User> typed = manager.createQuery(criteria);
-        return null;
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<Picture> criteria = builder.createQuery(Picture.class);
+        Root<Picture> from = criteria.from(Picture.class);
+        From join = from.join("pictureData");
+        criteria.select(from);
+        criteria.where(builder.equal(join.get("id"), id));
+        TypedQuery<Picture> typed = manager.createQuery(criteria);
+        Picture picture = typed.getSingleResult();
+        return picture;
     }
 
     @Transactional

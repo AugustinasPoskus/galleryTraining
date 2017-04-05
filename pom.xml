@@ -130,12 +130,6 @@
                 <scope>test</scope>
             </dependency>
 
-            <dependency>
-                <groupId>lt.insoft.training</groupId>
-                <artifactId>gallery-model</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-
         </dependencies>
 
     </dependencyManagement>

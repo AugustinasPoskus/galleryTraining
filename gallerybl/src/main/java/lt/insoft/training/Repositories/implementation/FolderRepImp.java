@@ -2,6 +2,7 @@ package lt.insoft.training.Repositories.implementation;
 
 import lt.insoft.training.Repositories.FolderRepository;
 import lt.insoft.training.model.Folder;
+import lt.insoft.training.model.Folder_;
 import lt.insoft.training.model.PictureData;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,9 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.Date;
 import java.util.List;
 
@@ -25,11 +24,12 @@ public class FolderRepImp implements FolderRepository {
 
     @Transactional
     public List<Folder> getFolders(int from, int amount) {
-        if((from >=0) && (amount > 0)) {
+        if ((from >= 0) && (amount > 0)) {
             CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
             CriteriaQuery<Folder> criteriaQuery = criteriaBuilder.createQuery(Folder.class);
             Root<Folder> fromSql = criteriaQuery.from(Folder.class);
             CriteriaQuery<Folder> select = criteriaQuery.select(fromSql);
+            //select.orderBy(criteriaBuilder.desc(fromSql.get(Folder_.date)));
             TypedQuery<Folder> typedQuery = manager.createQuery(select);
             typedQuery.setFirstResult(from);
             typedQuery.setMaxResults(amount);
@@ -41,9 +41,14 @@ public class FolderRepImp implements FolderRepository {
 
     @Transactional
     public boolean removeFolder(Long id) {
-        Folder folderInstance = this.getFolderById(id);
-        if (folderInstance != null) {
-            manager.remove(folderInstance);
+        CriteriaBuilder cb = manager.getCriteriaBuilder();
+        CriteriaDelete<Folder> delete = cb.createCriteriaDelete(Folder.class);
+        Root e = delete.from(Folder.class);
+        delete.where(cb.equal(e.get("id"), id));
+        int effectedRows = manager.createQuery(delete).executeUpdate();
+        if (effectedRows <= 0) {
+            return false;
+        } else if(effectedRows > 0){
             return true;
         }
         return false;
@@ -51,7 +56,7 @@ public class FolderRepImp implements FolderRepository {
 
     @Transactional(readOnly = true)
     public Folder getFolderById(Long id) {
-        if(!id.equals(null)){
+        if (!id.equals(null)) {
             return manager.find(Folder.class, id);
         }
         return null;
@@ -71,9 +76,12 @@ public class FolderRepImp implements FolderRepository {
     @Transactional
     public boolean updateFolder(Long id, String name) {
         try {
-            Folder folder = this.getFolderById(id);
-            folder.setName(name);
-            manager.merge(folder);
+            CriteriaBuilder cb = manager.getCriteriaBuilder();
+            CriteriaUpdate<Folder> update = cb.createCriteriaUpdate(Folder.class);
+            Root e = update.from(Folder.class);
+            update.set("name", name);
+            update.where(cb.equal(e.get("id"), id));
+            this.manager.createQuery(update).executeUpdate();
             return true;
         } catch (PersistenceException pe) {
             return false;
