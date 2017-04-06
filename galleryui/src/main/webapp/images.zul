@@ -13,33 +13,32 @@
                 <x:div class="modal-dialog">
                     <x:div class="modal-content">
                         <x:div class="modal-header">
-                            <x:button type="button" class="close" data-dismiss="modal">&#10006;</x:button>
+                            <x:button type="button" class="close"  onClick="@command('undo')" data-dismiss="modal">&#10006;</x:button>
                             <x:h4 class="modal-title">Upload picture</x:h4>
                         </x:div>
                         <x:div class="modal-body">
                             <div form="@id('pic') @load(vm.picture) @save(vm.picture, before='add')">
-                                <label value="Name:" width="150px" />
-                                <hlayout>
-                                    <textbox value="@bind(pic.name)"
-                                             width="150px" tabindex="1" />
-                                </hlayout>
-                                <label value="Description:" width="150px" />
-                                <hlayout>
-                                    <textbox value="@bind(pic.desciption)"
-                                             width="150px" tabindex="2" />
-                                </hlayout>
-                                <label value="Quality:" width="150px" />
-                                <hlayout>
-                                    <textbox value="@bind(pic.quality)"
-                                             width="150px" tabindex="3" />
-                                </hlayout>
-                                <button label="Upload Image" upload="true,maxsize=3000,multiple=false" onUpload="@command('doUploadFile', file=event.media)"/>
-                                <label id="attachmentFileName" style="font-weight:bold;"/>
+                                <x:div class="form-group">
+                                    <x:label class="form-control-label">Name:</x:label>
+                                    <textbox value="@bind(pic.name)" tabindex="1" sclass="form-control"/>
+                                </x:div>
+                                <x:div class="form-group">
+                                    <x:label class="form-control-label">Description:</x:label>
+                                    <textbox rows="5" value="@bind(pic.desciption)" tabindex="2" sclass="form-control" />
+                                </x:div>
+                                <x:div class="form-group">
+                                    <x:label class="form-control-label">Quality:</x:label>
+                                    <textbox value="@bind(pic.quality)" tabindex="3" sclass="form-control"/>
+                                </x:div>
+                                <x:div class="form-group inline">
+                                    <button label="Upload Image" upload="true,maxsize=3000,multiple=false" onUpload="@command('doUploadFile', file=event.media)"/>
+                                    <label value="@bind(vm.fileName)"/>
+                                </x:div>
                             </div>
                         </x:div>
                         <x:div class="modal-footer">
                             <x:button type="Submit" class="btn btn-default" onClick="@command('add')" data-dismiss="modal">Submit</x:button>
-                            <x:button type="button" class="btn btn-default"  data-dismiss="modal">Close</x:button>
+                            <x:button type="button" class="btn btn-default" onClick="@command('undo')" data-dismiss="modal">Close</x:button>
                         </x:div>
                     </x:div>
                 </x:div>
@@ -53,7 +52,7 @@
                 <x:div class="images" children="@bind(vm.pictureThumbnailList)">
                     <template name="children">
                         <x:div class="gallery_product col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                            <image content="@bind(each.thumbnail) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')"
+                            <image content="@bind(each.data) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')"
                                    onClick="@command('open', id=each.id)" sclass="imageBorder"/>
                         </x:div>
                     </template>

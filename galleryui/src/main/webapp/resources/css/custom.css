@@ -2,6 +2,15 @@
             cursor: default;
             pointer-events: none;
         }
+        .pagination>.disabled>span:hover, span , li#prevbtn, li#nextbtn {
+            cursor: pointer;
+        }
+        .pagination>.disabled>a{
+            background-color: #449d44;
+        }
+        .pagination>.disabled>a>span {
+            color: #fff;
+        }
         .page {
             padding: 70px 0;
             text-align: center;

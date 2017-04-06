@@ -24,13 +24,17 @@ public class Picture {
     @Column(name = "DESCRIPTION")
     private String desciption;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "DATA_ID")
     private PictureData pictureData;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "FOLER_ID", nullable = false)
-//    private Folder folder;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "THUMBNAIL_ID")
+    private Thumbnail thumbnail;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FOLDER_ID", nullable = false)
+    private Folder folder;
 
     public Long getId() {
         return id;
@@ -82,4 +86,19 @@ public class Picture {
         this.pictureData = pictureData;
     }
 
+    public Folder getFolder() {
+        return folder;
+    }
+
+    public void setFolder(Folder folder) {
+        this.folder = folder;
+    }
+
+    public Thumbnail getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(Thumbnail thumbnail) {
+        this.thumbnail = thumbnail;
+    }
 }

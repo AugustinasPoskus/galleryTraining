@@ -12,11 +12,11 @@ import org.zkoss.zk.ui.util.Clients;
 import java.util.List;
 
 public class GalleryViewModel {
+    @WireVariable
+    private FolderService folderService;
     private List<Folder> folderList;
     private String folderName;
     private Long selectedId;
-    @WireVariable
-    private FolderService folderService;
     private int foldersCount = 0;
     private int currentPage = 1;
     private final int paginationBy = 6;

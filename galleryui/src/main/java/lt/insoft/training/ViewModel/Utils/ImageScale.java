@@ -6,11 +6,14 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class ImageScale {
+    private static final int resultWidth = 256;
+    private static final int resultHeight = 256;
 
-    public static BufferedImage resizeImage(byte[] byteInputImage, int resultWidth, int resultHeight) {
+    public static byte[] resizeImage(byte[] byteInputImage, String type) {
         ByteArrayInputStream bais = new ByteArrayInputStream(byteInputImage);
         BufferedImage inputImage;
         try {
@@ -65,7 +68,22 @@ public class ImageScale {
         }
         inputImage.flush();
         outputImage.flush();
-
-        return outputImage;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write( outputImage, type , baos );
+        } catch (IOException e) {
+            return null;
+        }
+        try {
+            baos.flush();
+        } catch (IOException e) {
+           return null;
+        }
+        try {
+            baos.close();
+        } catch (IOException e) {
+            return null;
+        }
+        return baos.toByteArray();
     }
 }

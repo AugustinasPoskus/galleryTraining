@@ -1,20 +1,17 @@
 package lt.insoft.training.model;
 
-
 import javax.persistence.*;
-import java.sql.Blob;
 
 @Entity
-@Table(name = "AU_PICTURE_DATA")
-public class PictureData {
-
+@Table(name = "AU_THUMBNAIL")
+public class Thumbnail {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "DATA")
-    private byte[] data;
+    @Column(name = "THUMBNAIL")
+    private byte[] thumbnailData;
 
     public Long getId() {
         return id;
@@ -25,12 +22,10 @@ public class PictureData {
     }
 
     public byte[] getData() {
-        return data;
+        return thumbnailData;
     }
 
     public void setData(byte[] data) {
-        this.data = data;
+        this.thumbnailData = data;
     }
-
-    public PictureData() {}
 }

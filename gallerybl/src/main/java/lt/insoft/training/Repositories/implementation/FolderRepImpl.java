@@ -3,7 +3,6 @@ package lt.insoft.training.Repositories.implementation;
 import lt.insoft.training.Repositories.FolderRepository;
 import lt.insoft.training.model.Folder;
 import lt.insoft.training.model.Folder_;
-import lt.insoft.training.model.PictureData;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,16 +11,18 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import java.util.Date;
 import java.util.List;
 
 @Repository
 @Transactional
-public class FolderRepImp implements FolderRepository {
+public class FolderRepImpl implements FolderRepository {
 
     @PersistenceContext
     private EntityManager manager;
 
+    public Folder getFolder(Long id){
+        return manager.find(Folder.class, id);
+    }
     @Transactional
     public List<Folder> getFolders(int from, int amount) {
         if ((from >= 0) && (amount > 0)) {
@@ -29,7 +30,7 @@ public class FolderRepImp implements FolderRepository {
             CriteriaQuery<Folder> criteriaQuery = criteriaBuilder.createQuery(Folder.class);
             Root<Folder> fromSql = criteriaQuery.from(Folder.class);
             CriteriaQuery<Folder> select = criteriaQuery.select(fromSql);
-            //select.orderBy(criteriaBuilder.desc(fromSql.get(Folder_.date)));
+            select.orderBy(criteriaBuilder.desc(fromSql.get(Folder_.date)));
             TypedQuery<Folder> typedQuery = manager.createQuery(select);
             typedQuery.setFirstResult(from);
             typedQuery.setMaxResults(amount);
@@ -65,9 +66,8 @@ public class FolderRepImp implements FolderRepository {
     @Transactional
     public boolean addFolder(Folder folder) {
         if (!folder.getName().equals(null)) {
-            Date date = new Date();
-            folder.setDate(date);
             manager.persist(folder);
+            manager.flush();
             return true;
         }
         return false;

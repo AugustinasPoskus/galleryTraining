@@ -1,32 +1,22 @@
 package lt.insoft.training.ViewModel;
 
-
 import lt.insoft.training.ViewModel.Utils.ImageScale;
+import lt.insoft.training.model.Folder;
 import lt.insoft.training.model.Picture;
 import lt.insoft.training.model.PictureData;
-import lt.insoft.training.services.PictureDataService;
+import lt.insoft.training.model.Thumbnail;
+import lt.insoft.training.services.FolderService;
 import lt.insoft.training.services.PictureService;
 import org.apache.commons.io.IOUtils;
-import org.springframework.web.util.UriComponentsBuilder;
-import org.zkoss.bind.annotation.BindingParam;
-import org.zkoss.bind.annotation.Command;
-import org.zkoss.bind.annotation.Init;
-import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.bind.annotation.*;
 import org.zkoss.util.media.Media;
-import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.Messagebox;
 
-import javax.activation.MimetypesFileTypeMap;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.nio.Buffer;
 import java.util.Date;
 import java.util.List;
 
@@ -34,19 +24,29 @@ import java.util.List;
 public class ImagesViewModel {
 
     @WireVariable
-    private PictureDataService pictureDataService;
-    private Picture picture = new Picture();
-    private byte[] photo;
-    private byte[] photoThumbnail;
-    @WireVariable
     private PictureService pictureService;
-    private List<PictureData> pictureThumbnailList;
-    private byte[] image = this.getFileBytes();
+    @WireVariable
+    private FolderService folderService;
+    private Picture picture = new Picture();
+    private PictureData pictureData = new PictureData();
+    private Thumbnail thumbnail = new Thumbnail();
+    private String fileName = "No picture uploaded!";
+    private List<Thumbnail> pictureThumbnailList;
     private Long folderId;
+    private int paginationBy = 12;
 
     @Init
-    public void init() {
-        pictureThumbnailList = pictureDataService.getPictureThumbnail(0,10);
+    public void init(@ContextParam(ContextType.EXECUTION) Execution execution) {
+        String parameter = execution.getParameter("folderId");
+        try{
+            folderId = Long.parseLong(parameter);
+            System.out.println(folderId);
+            pictureThumbnailList =  pictureService.getPictureThumbnail(0,paginationBy, folderId);
+            System.out.println(pictureThumbnailList.size());
+
+        }catch (NumberFormatException ex) {
+            System.out.println("page not found");
+        }
     }
 
     public Picture getPicture() {
@@ -79,64 +79,61 @@ public class ImagesViewModel {
 
     @Command
     public void open(@BindingParam("id") Long id){
-        Picture picture = pictureService.getPictureByDataId(id);
+        //Picture picture = picturesService.getPictureByDataId(id);
         System.out.println(id+ " " + picture.getName() + " " + picture.getDesciption());
     }
 
     @Command
+    @NotifyChange("fileName")
     public void doUploadFile(@BindingParam("file") Media image) {
         if(!image.equals(null)) {
             if (!image.getContentType().startsWith("image/")) {
-                Messagebox.show("Not an image: " + photo, "Error", Messagebox.OK, Messagebox.ERROR);
+                Messagebox.show("Not an image: " + image.getName(), "Error", Messagebox.OK, Messagebox.ERROR);
                 return;
             }
-            this.photo = image.getByteData();
-            BufferedImage thumbnail = null;
-            try {
-                thumbnail = ImageScale.resizeImage(this.photo, 256,256);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            System.out.println("Mime Type of " + image.getName() + " is " + image.getFormat());
-            try {
-                ImageIO.write( thumbnail, image.getFormat(), baos );
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                baos.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            this.photoThumbnail = baos.toByteArray();
-            try {
-                baos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.fileName = "Attached: " + image.getName();
+            pictureData.setData(image.getByteData());
+            String type = image.getFormat();
+            thumbnail.setData(ImageScale.resizeImage(pictureData.getData(), type));
         }
     }
 
     @Command
-    @NotifyChange("pictureThumbnailList")
+    @NotifyChange({"pictureThumbnailList", "fileName"})
     public void add(){
-        System.out.println(picture.getName() + " " + picture.getDesciption() + " " + picture.getQuality());
-        picture.setDate(new Date());
-        PictureData pictureData = new PictureData();
-        pictureData.setData(this.photo);
-        pictureData.setThumbnail(this.photoThumbnail);
-        picture.setPictureData(pictureData);
-        pictureDataService.addPictureData(pictureData);
-        pictureService.addPicture(picture);
-        pictureThumbnailList.add(pictureData);
+        if(pictureData.getData() != null && thumbnail.getData() != null ){
+            System.out.println(picture.getName() + " " + picture.getDesciption() + " " + picture.getQuality());
+            picture.setPictureData(pictureData);
+            Folder folder = folderService.getFolder(folderId);
+            pictureService.addPicture(picture, pictureData, thumbnail, folder);
+            pictureThumbnailList.add(thumbnail);
+        }
+        picture = new Picture();
+        pictureData = new PictureData();
+        this.fileName= "No picture uploaded!";
     }
 
-    public List<PictureData> getPictureThumbnailList() {
+    @Command
+    @NotifyChange("fileName")
+    public void undo(){
+        picture = new Picture();
+        pictureData = new PictureData();
+        this.fileName= "No picture uploaded!";
+    }
+
+    public List<Thumbnail> getPictureThumbnailList() {
         return pictureThumbnailList;
     }
 
-    public void setPictureThumbnailList(List<PictureData> pictureThumbnailList) {
+    public void setPictureThumbnailList(List<Thumbnail> pictureThumbnailList) {
         this.pictureThumbnailList = pictureThumbnailList;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

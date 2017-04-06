@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"/>
-    <script src="resources/js/galleryJq.js"/>
+    <script src="resources/js/pagingJq.js"/>
     <x:link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
     <x:link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"/>
@@ -39,10 +38,6 @@
                 <x:ul class="pagination">
                 </x:ul>
             </x:nav>
-            <label id="vba" value="folderCount:"/>
-            <label value="@bind(vm.foldersCount)" id="totalFolders"/>
-            <label value="folderCount:"/>
-            <label value="@bind(vm.pagesCount)" id ="pagesCount"/>
         </x:div>
         <x:div id="changeFolderNameModal" class="modal fade" role="dialog">
             <x:div class="modal-dialog">
