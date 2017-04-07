@@ -3,6 +3,8 @@ package lt.insoft.training.Repositories.implementation;
 import lt.insoft.training.Repositories.FolderRepository;
 import lt.insoft.training.model.Folder;
 import lt.insoft.training.model.Folder_;
+import lt.insoft.training.model.Picture;
+import lt.insoft.training.model.Picture_;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +45,14 @@ public class FolderRepImpl implements FolderRepository {
     @Transactional
     public boolean removeFolder(Long id) {
         CriteriaBuilder cb = manager.getCriteriaBuilder();
+
+        CriteriaDelete<Picture> query = cb.createCriteriaDelete(Picture.class);
+        Root<Picture> root = query.from(Picture.class);
+        query.where(cb.equal(root.get(Picture_.folder), id));
+        manager.createQuery(query).executeUpdate();
+
         CriteriaDelete<Folder> delete = cb.createCriteriaDelete(Folder.class);
+
         Root e = delete.from(Folder.class);
         delete.where(cb.equal(e.get("id"), id));
         int effectedRows = manager.createQuery(delete).executeUpdate();

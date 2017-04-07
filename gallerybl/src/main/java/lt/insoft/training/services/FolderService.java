@@ -16,7 +16,6 @@ public class FolderService {
 
     @Autowired
     private FolderRepository folderRep;
-    private int index = 0;
 
     public FolderService() {
     }
@@ -30,8 +29,7 @@ public class FolderService {
     }
 
     public boolean addFolder(Folder folder) {
-        folder.setName(folder.getName() + index);
-        index++;
+        folder.setName(folder.getName());
         Date date = new Date();
         folder.setDate(date);
         return folderRep.addFolder(folder);

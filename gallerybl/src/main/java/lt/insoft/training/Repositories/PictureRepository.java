@@ -13,5 +13,5 @@ public interface PictureRepository {
     public Long insertPicture(Picture picture);
     public boolean removePicture(Long id);
     public Picture findPictureByThumbnailId(Long id);
-    public List<Thumbnail> getThumbnails(int from, int amount, Long folderId);
+    public List<Picture> getPictures(int from, int amount, Long folderId);
 }

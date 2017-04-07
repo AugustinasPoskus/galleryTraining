@@ -30,7 +30,7 @@ public class PictureRepImpl implements PictureRepository {
         CriteriaQuery<Picture> criteria = builder.createQuery(Picture.class);
         Root<Picture> from = criteria.from(Picture.class);
         criteria.select(from);
-        criteria.where(builder.equal(from.get(Picture_.pictureData), id));
+        criteria.where(builder.equal(from.get(Picture_.thumbnail), id));
         TypedQuery<Picture> typedQuery = manager.createQuery(criteria);
         Picture picture = typedQuery.getSingleResult();
 //        CriteriaBuilder builder = manager.getCriteriaBuilder();
@@ -75,35 +75,23 @@ public class PictureRepImpl implements PictureRepository {
     }
 
     @Transactional
-    public List<Thumbnail> getThumbnails(int from, int amount, Long folderId) {
+    public List<Picture> getPictures(int from, int amount, Long folderId) {
         if ((from >= 0) && (amount > 0)) {
-//            CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
-//            CriteriaQuery<Thumbnail> criteriaQuery = criteriaBuilder.createQuery(Thumbnail.class);
-//            Root<Thumbnail> fromSql = criteriaQuery.from(Thumbnail.class);
-//            CriteriaQuery<Thumbnail> select = criteriaQuery.select(fromSql);
-//            TypedQuery<Thumbnail> typedQuery = manager.createQuery(select);
-//            typedQuery.setFirstResult(from);
-//            typedQuery.setMaxResults(amount);
-//            List<Thumbnail> thumbnails = typedQuery.getResultList();
             CriteriaBuilder builder = manager.getCriteriaBuilder();
-//            CriteriaQuery<Thumbnail> cq = builder.createQuery(Thumbnail.class);
-//            Root<Thumbnail> thumbnailRoot = cq.from(Thumbnail.class);
-//            Subquery<Picture> sq = cq.subquery(Picture.class);
-//            Root<Picture> pictureRoot = cq.from(Picture.class);
-//            sq.select(pictureRoot.getModel("Thumbnail"));
-//            sq.where(builder.equal(pictureRoot.get("folder"), folderId));
-//            cq.select(thumbnailRoot);
-//            cq.where(builder.equal(thumbnailRoot.get("id"), sq));
+            CriteriaQuery<Picture> c = builder.createQuery(Picture.class);
+            Root<Picture> role = c.from(Picture.class);
+            Subquery<Folder> sq = c.subquery(Folder.class);
+            Root<Folder> userSQ = sq.from(Folder.class);
+            sq.select(userSQ).where(builder.equal(userSQ.get(Folder_.id), folderId));
+            c.select(role).where(builder.equal(role.get(Picture_.folder),sq));
+            role.fetch(Picture_.thumbnail);
+            TypedQuery<Picture> typedQuery = manager.createQuery(c);
+            typedQuery.setFirstResult(from);
+            typedQuery.setMaxResults(amount);
+            List<Picture> pictures = typedQuery.getResultList();
+            //List <Picture> resultList = manager.createQuery(c).getResultList();
 
-            CriteriaQuery<Tuple> cq = builder.createTupleQuery();
-            Root<Picture> root = cq.from(Picture.class);
-            cq.multiselect(root.get(Picture_.id), root.get(Picture_.folder));  //using metamodel
-            List<Tuple> tupleResult = manager.createQuery(cq).getResultList();
-            for (Tuple t : tupleResult) {
-                Long id = (Long) t.get(0);
-                Folder version = (Folder) t.get(1);
-                System.out.println("picture id: " + id + " folder" + version.getId());
-            }
+            return pictures;
         }
         return null;
     }
