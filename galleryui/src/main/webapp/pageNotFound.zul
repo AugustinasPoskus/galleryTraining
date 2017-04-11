@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"/>
+    <style src="resources/css/pageNotFound.css"/>
+    <x:div class="container">
+        <x:div class="row">
+            <x:div class="col-md-12">
+                <x:div class="error-template">
+                    <x:h1>
+                        Oops!
+                    </x:h1>
+                    <x:h2>
+                        404 Not Found
+                    </x:h2>
+                    <x:div class="error-details">
+                        Sorry, an error has occured, Requested page not found!
+                    </x:div>
+                    <x:div class="error-actions">
+                        <x:a href="index.zul" class="btn btn-primary btn-lg">
+                            <x:span class="glyphicon glyphicon-home"></x:span>
+                            Take Me Home
+                        </x:a>
+                    </x:div>
+                </x:div>
+            </x:div>
+        </x:div>
+    </x:div>
+</zk>

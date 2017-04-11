@@ -1,0 +1,16 @@
+.disabled>.page-link {
+    cursor: default;
+    pointer-events: none;
+}
+.pagination>.disabled>span:hover, li#prevbtn, li#nextbtn .pagination>.disabled>span {
+    cursor: not-allowed;
+}
+.pagination>.disabled>a{
+    background-color: #449d44;
+}
+.pagination>.disabled>a>span {
+    color: #fff;
+}
+.paginationNav{
+    text-align: center;
+}

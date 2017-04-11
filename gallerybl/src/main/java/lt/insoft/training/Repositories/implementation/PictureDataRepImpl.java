@@ -21,7 +21,7 @@ public class PictureDataRepImpl implements PictureDataRepository{
     @PersistenceContext
     private EntityManager manager;
 
-    @Transactional(readOnly=true)
+    @Transactional
     public List<PictureData> getPicturesThumbnails(int from, int amount) {
         if((from >=0) && (amount > 0)) {
             CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();

@@ -5,8 +5,10 @@ import lt.insoft.training.model.Folder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service("folderService")
@@ -16,6 +18,8 @@ public class FolderService {
 
     @Autowired
     private FolderRepository folderRep;
+    //private HashMap<Integer, List<Folder>> loadedFolders = new HashMap<Integer, List<Folder>>();
+    private int pagedBy = 6;
 
     public FolderService() {
     }
@@ -24,26 +28,29 @@ public class FolderService {
         return folderRep.getFolder(id);
     }
 
-    public List<Folder> getFolders(int from, int amount) {
+    public List<Folder> getFolders(int from, int amount, int page) {
         return folderRep.getFolders(from, amount);
     }
 
+    @Transactional
     public boolean addFolder(Folder folder) {
-        folder.setName(folder.getName());
         Date date = new Date();
         folder.setDate(date);
         return folderRep.addFolder(folder);
     }
 
+    @Transactional
     public boolean removeFolder(Long id) {
         return folderRep.removeFolder(id);
     }
 
-    public boolean updateFolder(Long id, String name) {
-        return folderRep.updateFolder(id, name);
+    @Transactional
+    public Folder updateFolder(Folder folder, String name) {
+        return folderRep.updateFolder(folder, name);
     }
 
     public int foldersCount() {
         return folderRep.getFoldersCount();
     }
+
 }

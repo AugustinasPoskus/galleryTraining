@@ -27,23 +27,23 @@ public class PictureService {
     public PictureService(){}
 
     @Transactional
-    public boolean addPicture(Picture picture, PictureData pictureData, Thumbnail thumbnail, Folder folder){
+    public long addPicture(Picture picture, PictureData pictureData, Thumbnail thumbnail, Folder folder){
         picture.setPictureData(pictureData);
         picture.setThumbnail(thumbnail);
         picture.setFolder(folder);
         Date date = new Date();
         picture.setDate(date);
-        pictureRep.insertPicture(picture);
-        return true;
+        pictures.add(picture);
+        return pictureRep.insertPicture(picture);
     }
 
-    public Picture getPictureByDataId(Long id) {
-        return pictureRep.findPictureByThumbnailId(id);
-    }
-
-    public boolean removePicture(Long id) {
-        pictureDataRep.removePictureData(id);
-        pictureRep.removePicture(id);
+    @Transactional
+    public boolean removePictureByThumbnail(Long id) {
+        Picture picture = this.getPictureByThumbnail(id);
+        if(pictureRep.removePicture(picture.getId())){
+            pictures.remove(picture);
+            return true;
+        }
         return false;
     }
 
@@ -52,7 +52,6 @@ public class PictureService {
     }
 
     public List<Thumbnail> getPictureThumbnail(int from, int amount, Long folderId) {
-        System.out.println("from: " + from + " amount: " + amount);
         pictures = pictureRep.getPictures(from, amount,folderId);
         List<Thumbnail> thumbnails = new ArrayList<Thumbnail>();
         for(int i=0; i<pictures.size();i++)
@@ -63,7 +62,23 @@ public class PictureService {
     }
 
     public Picture getPictureInfoById(Long id) {
-        return pictureRep.findPictureByThumbnailId(id);
+        Picture picture = this.getPictureByThumbnail(id);
+        if(picture == null) {
+            return pictureRep.findPictureByThumbnailId(id);
+        } else{
+            return picture;
+        }
+
+    }
+
+    private Picture getPictureByThumbnail(Long id){
+        for(int i=0; i<pictures.size();i++)
+        {
+            if(pictures.get(i).getThumbnail().getId().equals(id)){
+                return pictures.get(i);
+            }
+        }
+        return null;
     }
 
 }

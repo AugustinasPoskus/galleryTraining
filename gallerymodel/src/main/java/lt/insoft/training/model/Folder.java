@@ -1,13 +1,17 @@
 package lt.insoft.training.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "AU_FOLDER")
-public class Folder {
+public class Folder implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -18,8 +22,15 @@ public class Folder {
     private String name;
 
     @Column(name = "INSERT_DATE")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
+
+    @Version
+    @Column(name = "VERSION")
+    private Long version;
+
+    @OneToMany(orphanRemoval=true, fetch = FetchType.LAZY, mappedBy = "folder")
+    private List<Picture> pictures;
 
     public Folder() {
     }
@@ -46,5 +57,21 @@ public class Folder {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public List<Picture> getPictures() {
+        return pictures;
+    }
+
+    public void setPictures(List<Picture> pictures) {
+        this.pictures = pictures;
     }
 }

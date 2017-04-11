@@ -1,0 +1,64 @@
+.page {
+    padding: 70px 0;
+    text-align: center;
+}
+.boldLabel{
+    font-weight: bold;
+}
+.buttons {
+    width:100%;
+    position: absolute;
+    top: 10%;
+    left: 23%;
+}
+.caption {
+    width:100%;
+    position: absolute;
+    top: 40%;
+}
+
+.container {
+    width:100%;
+}
+.thumbnail {
+    background-color: transparent;
+    border: 0 none;
+    margin:0;
+    padding:0;
+    padding-bottom: 20px;
+}
+
+.caption .folderName {
+    color: #fff;
+    font-size: 200%;
+}
+.buttons i{
+    cursor: pointer;
+}
+.material-icons{
+    style="font-size:24px";
+}
+.buttonHolder{
+    padding-top: 20px;
+    text-align: center;
+}
+
+.pagination2{
+    border-bottom: none;
+    background: none;
+}
+.emptyList{
+  text-align: center;
+  height: 300px;
+  width: 100%;
+}
+
+.emptyLabel{
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+

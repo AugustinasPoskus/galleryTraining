@@ -25,7 +25,7 @@ public class Picture {
     private String name;
 
     @Column(name = "DESCRIPTION")
-    private String desciption;
+    private String description;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "DATA_ID")
@@ -71,12 +71,12 @@ public class Picture {
         this.name = name;
     }
 
-    public String getDesciption() {
-        return desciption;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesciption(String desciption) {
-        this.desciption = desciption;
+    public void setDescription(String desciption) {
+        this.description = desciption;
     }
 
     public Picture() {}

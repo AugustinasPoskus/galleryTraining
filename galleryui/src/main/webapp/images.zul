@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
     <x:link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <script src="resources/js/alert.js"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <x:link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style src="resources/css/images.css"/>
-    <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.ImagesViewModel')">
-        <!--<label value="@load(vm.folderId)"/>-->
+    <x:div apply="org.zkoss.bind.BindComposer"
+           viewModel="@id('vm') @init('lt.insoft.training.ViewModel.ImagesViewModel')">
         <x:div class="container">
-            <x:button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Upload picture</x:button>
             <x:div class="modal fade" id="myModal" role="dialog">
                 <x:div class="modal-dialog">
                     <x:div class="modal-content">
                         <x:div class="modal-header">
-                            <x:button type="button" class="close"  onClick="@command('undo')" data-dismiss="modal">&#10006;</x:button>
+                            <x:button type="button" class="close" onClick="@command('undo')" data-dismiss="modal">
+                                &#10006;</x:button>
                             <x:h4 class="modal-title">Upload picture</x:h4>
                         </x:div>
                         <x:div class="modal-body">
@@ -24,39 +26,129 @@
                                 </x:div>
                                 <x:div class="form-group">
                                     <x:label class="form-control-label">Description:</x:label>
-                                    <textbox rows="5" value="@bind(pic.desciption)" tabindex="2" sclass="form-control" />
+                                    <textbox rows="5" value="@bind(pic.description)" tabindex="2"
+                                             sclass="form-control"/>
                                 </x:div>
                                 <x:div class="form-group">
                                     <x:label class="form-control-label">Quality:</x:label>
                                     <textbox value="@bind(pic.quality)" tabindex="3" sclass="form-control"/>
                                 </x:div>
                                 <x:div class="form-group inline">
-                                    <button label="Upload Image" upload="true,maxsize=3000,multiple=false" onUpload="@command('doUploadFile', file=event.media)"/>
+                                    <button label="Upload Image" upload="true,maxsize=3000,multiple=false"
+                                            onUpload="@command('doUploadFile', file=event.media)"/>
                                     <label value="@bind(vm.fileName)"/>
                                 </x:div>
                             </div>
                         </x:div>
                         <x:div class="modal-footer">
-                            <x:button type="Submit" class="btn btn-default" onClick="@command('add')" data-dismiss="modal">Submit</x:button>
-                            <x:button type="button" class="btn btn-default" onClick="@command('undo')" data-dismiss="modal">Close</x:button>
+                            <x:button type="Submit" class="btn btn-default" onClick="@command('add')"
+                                      data-dismiss="modal">Submit
+                            </x:button>
+                            <x:button type="button" class="btn btn-default" onClick="@command('undo')"
+                                      data-dismiss="modal">Close
+                            </x:button>
+                        </x:div>
+                    </x:div>
+                </x:div>
+            </x:div>
+            <x:div class="modal fade" id="showInfo" role="dialog">
+                <x:div class="modal-dialog">
+                    <x:div class="modal-content">
+                        <x:div class="modal-header">
+                            <x:button type="button" class="close" data-dismiss="modal">&#10006;</x:button>
+                            <x:h4 class="modal-title">Image information</x:h4>
+                        </x:div>
+                        <x:div class="modal-body">
+                            <x:div class="form-group">
+                                <x:label class="form-control-label">Name:</x:label>
+                                <label value="@bind(vm.selectedPicture.name)"/>
+                            </x:div>
+                            <x:div class="form-group">
+                                <x:label class="form-control-label">Description:</x:label>
+                                <label value="@bind(vm.selectedPicture.description)"/>
+                            </x:div>
+                            <x:div class="form-group">
+                                <x:label class="form-control-label">Quality:</x:label>
+                                <label value="@bind(vm.selectedPicture.quality)"/>
+                            </x:div>
+                            <x:div class="form-group inline">
+                                <x:label class="form-control-label">Upload date:</x:label>
+                                <label value="@bind(vm.selectedPicture.date)"/>
+                            </x:div>
+                        </x:div>
+                        <x:div class="modal-footer">
+                            <x:button type="button" class="btn btn-default" onClick="@command('undo')"
+                                      data-dismiss="modal">Close
+                            </x:button>
+                        </x:div>
+                    </x:div>
+                </x:div>
+            </x:div>
+            <x:div class="modal fade" id="uploadError" role="dialog">
+                <x:div class="modal-dialog">
+                    <x:div class="modal-content">
+                        <x:div class="modal-header">
+                            <x:button type="button" class="close" data-dismiss="modal">&#10006;</x:button>
+                            <x:h4 class="modal-title">Error while uploading!</x:h4>
+                        </x:div>
+                        <x:div class="modal-body">
+                            <x:p id="msg"/>
+                        </x:div>
+                        <x:div class="modal-footer">
+                            <x:button type="button" class="btn btn-default" data-dismiss="modal">Close</x:button>
+                        </x:div>
+                    </x:div>
+                </x:div>
+            </x:div>
+            <x:div id="confirmationModal" class="modal fade" role="dialog">
+                <x:div class="modal-dialog">
+                    <x:div class="modal-content">
+                        <x:div class="modal-header">
+                            <x:button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &#10006;</x:button>
+                            <x:h4 class="modal-title">Confirmation</x:h4>
+                        </x:div>
+                        <x:div class="modal-body">
+                            <label value="Do you want to delete "/>
+                            <label sclass="boldLabel" value="@bind(vm.selectedPicture.name)"/>
+                            <label value=" picture permanently?"/>
+                        </x:div>
+                        <x:div class="modal-footer">
+                            <x:button type="button" class="btn btn-default" data-dismiss="modal">Leave it</x:button>
+                            <x:button type="button" class="btn btn-danger" onClick="@command('remove', id=vm.selectedThumbnailId)"
+                                      data-dismiss="modal">Delete
+                            </x:button>
                         </x:div>
                     </x:div>
                 </x:div>
             </x:div>
         </x:div>
         <x:div class="container">
-            <x:div class="row">
-                <x:div class="gallery col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <x:h1 class="gallery-title">Gallery</x:h1>
-                </x:div>
-                <x:div class="images" children="@bind(vm.pictureThumbnailList)">
-                    <template name="children">
-                        <x:div class="gallery_product col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <x:div class="gallery col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <label sclass="gallery-title" value="@load(vm.folder.name)"/>
+            </x:div>
+            <x:div class="buttonHolder">
+                <x:button type="button" class="btn" data-toggle="modal" data-target="#myModal">
+                    Upload picture
+                </x:button>
+            </x:div>
+            <x:div class=" col-lg-12 row" children="@bind(vm.pictureThumbnailList)">
+                <template name="children">
+                    <x:div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                        <x:div class="col-lg-12 thumbnail text-center">
+                            <x:div class="buttons">
+                                <x:i class="material-icons" data-toggle="modal" data-target="#showInfo"
+                                     onClick="@command('setImageInformation', id=each.id)" title="Information">info_outline
+                                </x:i>
+                                <x:i class="material-icons" data-toggle="modal" data-target="#changeFolderNameModal" title="Edit">edit</x:i>
+                                <x:i class="material-icons" data-toggle="modal" data-target="#confirmationModal"
+                                     onClick="@command('setSelectedThumbnailId', id=each.id)">delete</x:i>
+                            </x:div>
                             <image content="@bind(each.data) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')"
                                    onClick="@command('open', id=each.id)" sclass="imageBorder"/>
                         </x:div>
-                    </template>
-                </x:div>
+                    </x:div>
+                </template>
             </x:div>
         </x:div>
     </x:div>

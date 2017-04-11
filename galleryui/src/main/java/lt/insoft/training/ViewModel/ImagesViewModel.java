@@ -13,11 +13,10 @@ import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
-import org.zkoss.zul.Messagebox;
+import org.zkoss.zk.ui.util.Clients;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
 
 @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
@@ -28,24 +27,28 @@ public class ImagesViewModel {
     @WireVariable
     private FolderService folderService;
     private Picture picture = new Picture();
+    private Picture selectedPicture;
+    private Folder folder;
     private PictureData pictureData = new PictureData();
+    private Long selectedThumbnailId;
     private Thumbnail thumbnail = new Thumbnail();
     private String fileName = "No picture uploaded!";
     private List<Thumbnail> pictureThumbnailList;
-    private Long folderId;
-    private int paginationBy = 12;
+    private int paginationBy = 8;
 
     @Init
     public void init(@ContextParam(ContextType.EXECUTION) Execution execution) {
         String parameter = execution.getParameter("folderId");
         try{
-            folderId = Long.parseLong(parameter);
-            System.out.println(folderId);
-            pictureThumbnailList =  pictureService.getPictureThumbnail(0,paginationBy, folderId);
-            System.out.println(pictureThumbnailList.size());
+            Long folderId = Long.parseLong(parameter);
+            folder = folderService.getFolder(folderId);
+            if(folder == null){
 
+            } else{
+                pictureThumbnailList =  pictureService.getPictureThumbnail(0,paginationBy, folder.getId());
+            }
         }catch (NumberFormatException ex) {
-            System.out.println("page not found");
+
         }
     }
 
@@ -55,14 +58,6 @@ public class ImagesViewModel {
 
     public void setPicture(Picture picture) {
         this.picture = picture;
-    }
-
-    public Long getValue() {
-        return folderId;
-    }
-
-    public void setValue(Long value) {
-        this.folderId = value;
     }
 
     private byte[] getFileBytes() {
@@ -78,9 +73,15 @@ public class ImagesViewModel {
     }
 
     @Command
+    @NotifyChange("selectedPicture")
+    public void setImageInformation(@BindingParam("id") Long id){
+        selectedPicture = pictureService.getPictureInfoById(id);
+    }
+
+    @Command
     public void open(@BindingParam("id") Long id){
         Picture pictureInfo = pictureService.getPictureInfoById(id);
-        System.out.println(pictureInfo.getId() + " " + pictureInfo.getName() + " " + pictureInfo.getDesciption());
+        System.out.println(pictureInfo.getId() + " " + pictureInfo.getName() + " " + pictureInfo.getDescription());
     }
 
     @Command
@@ -88,7 +89,9 @@ public class ImagesViewModel {
     public void doUploadFile(@BindingParam("file") Media image) {
         if(!image.equals(null)) {
             if (!image.getContentType().startsWith("image/")) {
-                Messagebox.show("Not an image: " + image.getName(), "Error", Messagebox.OK, Messagebox.ERROR);
+                //Messagebox.show("Not an image: " + image.getName(), "Error", Messagebox.OK, Messagebox.ERROR);
+                String message = "The request was rejected because the file (" + image.getName() + ") is not an image!";
+                Clients.evalJavaScript("failedUpload( '" + message + "' );");
                 return;
             }
             this.fileName = "Attached: " + image.getName();
@@ -99,25 +102,32 @@ public class ImagesViewModel {
     }
 
     @Command
-    @NotifyChange({"pictureThumbnailList", "fileName"})
+    @NotifyChange({"pictureThumbnailList", "fileName", "picture"})
     public void add(){
         if(pictureData.getData() != null && thumbnail.getData() != null ){
-            System.out.println(picture.getName() + " " + picture.getDesciption() + " " + picture.getQuality());
-            picture.setPictureData(pictureData);
-            Folder folder = folderService.getFolder(folderId);
+            System.out.println(picture.getName() + " " + picture.getDescription() + " " + picture.getQuality());
             pictureService.addPicture(picture, pictureData, thumbnail, folder);
             pictureThumbnailList.add(thumbnail);
         }
         picture = new Picture();
         pictureData = new PictureData();
+        thumbnail = new Thumbnail();
         this.fileName= "No picture uploaded!";
     }
 
     @Command
-    @NotifyChange("fileName")
+    @NotifyChange({"pictureThumbnailList"})
+    public void remove(@BindingParam("id") Long id){
+        pictureService.removePictureByThumbnail(id);
+        pictureThumbnailList.removeIf(p -> p.getId().equals(id));
+    }
+
+    @Command
+    @NotifyChange({"fileName", "picture"})
     public void undo(){
         picture = new Picture();
         pictureData = new PictureData();
+        thumbnail = new Thumbnail();
         this.fileName= "No picture uploaded!";
     }
 
@@ -135,5 +145,36 @@ public class ImagesViewModel {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public Picture getSelectedPicture() {
+        return selectedPicture;
+    }
+
+    public void setSelectedPicture(Picture selectedPicture) {
+        this.selectedPicture = selectedPicture;
+    }
+
+    public void setSelectedPicture(Long id) {
+        this.selectedPicture = selectedPicture;
+    }
+
+    public Folder getFolder() {
+        return folder;
+    }
+
+    public void setFolder(Folder folder) {
+        this.folder = folder;
+    }
+
+    public Long getSelectedThumbnailId() {
+        return selectedThumbnailId;
+    }
+
+    @Command
+    public void setSelectedThumbnailId(@BindingParam("id") Long selectedThumbnailId) {
+        this.selectedThumbnailId = selectedThumbnailId;
+        System.out.println(selectedThumbnailId);
+        this.selectedPicture = pictureService.getPictureInfoById(selectedThumbnailId);
     }
 }

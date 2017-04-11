@@ -6,28 +6,40 @@
     font-weight: 500;
     margin-bottom: 70px;
 }
-.gallery-title:after {
-    content: "";
-    position: absolute;
-    width: 7.5%;
-    left: 46.5%;
-    height: 45px;
-    border-bottom: 1px solid #5e5e5e;
-}
-
-.gallery_product
-{
-    margin-bottom: 30px;
-}
 .imageBorder {
     border:1px solid #021a40;
 }
+
 .form-control{
     width: 100%;
 }
+
 textarea {
     resize: none;
 }
+
 .inline {
     display: inline-block;
+}
+
+.buttons {
+    position: absolute;
+    top: 8%;
+    margin: auto;
+    width: 100%;
+}
+
+.buttons i{
+    cursor: pointer;
+}
+
+.buttonHolder, .gallery{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.thumbnail {
+    background-color: transparent;
+    border: 0 none;
 }

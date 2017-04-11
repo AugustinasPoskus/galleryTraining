@@ -2,55 +2,85 @@
 <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"/>
-    <script src="resources/js/pagingJq.js"/>
+    <script src="resources/js/alert.js"/>
     <x:link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
     <x:link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"/>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"/>
-    <style src="resources/css/custom.css"/>
-    <x:div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')">
+    <style src="resources/css/index.css"/>
+    <x:div apply="org.zkoss.bind.BindComposer"
+           viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')"
+           validationMessages = "@id('vmsgs')">
         <x:div class="page">
             <x:div class="buttonHolder">
-                <x:a class="btn icon-btn btn-success" onClick="@command('add')">
+                <x:a class="btn icon-btn btn-success" data-toggle="modal" data-target="#addFolder">
                     <span class="glyphicon btn-glyphicon glyphicon-plus img-circle text-success"/>
                     Add New Folder
                 </x:a>
             </x:div>
             <x:div class="container">
-                <x:div class=" col-lg-12 row" children="@bind(vm.folderList)">
+                <x:div class=" col-lg-12 row" children="@bind(vm.availableFolders)">
                     <template name="children">
                         <x:div class="col-lg-2 col-md-4 col-sm-6 col-xs-12">
                             <x:div class="col-lg-12 thumbnail text-center">
                                 <x:div class="buttons">
-                                    <x:i class="material-icons" data-toggle="modal" data-target="#changeFolderNameModal" onClick="@command('setSelectedId', id=each.id)">edit</x:i>
-                                    <x:i class="material-icons" data-toggle="modal" data-target="#confirmationModal" onClick="@command('setSelectedId', id=each.id)">delete</x:i>
+                                    <x:i class="material-icons" data-toggle="modal" data-target="#changeFolderNameModal"
+                                         onClick="@command('setSelectedId', id=each.id)" title="Edit">edit
+                                    </x:i>
+                                    <x:i class="material-icons" data-toggle="modal" data-target="#confirmationModal"
+                                         onClick="@command('setSelectedId', id=each.id)" title="Delete">delete
+                                    </x:i>
                                 </x:div>
                                 <x:div class="caption">
-                                    <label sclass="folderName" value="@bind(each.name)"/>
+                                    <label sclass="folderName" value="@bind(each.name)" />
                                 </x:div>
-                                <x:img alt="" class="img-responsive" src='resources/folder.png' onClick="@command('open', id=each.id)"/>
+                                <x:img alt="" class="img-responsive" src='resources/folder.png'
+                                       onClick="@command('open', id=each.id)"/>
                             </x:div>
                         </x:div>
                     </template>
                 </x:div>
             </x:div>
-            <x:nav class="paginationNav">
-                <x:ul class="pagination">
-                </x:ul>
-            </x:nav>
+            <x:div visible="@bind(vm.foldersCount eq 0)" class="emptyList">
+                <x:div class="emptyLabel">
+                    <x:h1>There is no folders added!</x:h1>
+                </x:div>
+            </x:div>
+            <paging onPaging="@command('paging')"
+                    totalSize="@bind(vm.foldersCount)" pageSize="@bind(vm.paginationBy)" activePage="@bind(vm.currentPage)" sclass="pagination2"/>
+        </x:div>
+        <x:div id="nameNotChanged" class="modal fade" role="dialog">
+            <x:div class="modal-dialog">
+                <x:div class="modal-content">
+                    <x:div class="modal-header">
+                        <x:button type="button" class="close" data-dismiss="modal">&#10006;</x:button>
+                        <x:h4 class="modal-title">Warning!</x:h4>
+                    </x:div>
+                    <x:div class="modal-body">
+                        <x:p id="message"/>
+                    </x:div>
+                    <x:div class="modal-footer">
+                        <x:button type="button" class="btn btn-default" data-dismiss="modal">Close</x:button>
+                    </x:div>
+                </x:div>
+            </x:div>
         </x:div>
         <x:div id="changeFolderNameModal" class="modal fade" role="dialog">
             <x:div class="modal-dialog">
                 <x:div class="modal-content">
                     <x:div class="modal-header">
                         <x:button id="folderName" type="button" class="close" data-dismiss="modal">&#10006;</x:button>
-                        <x:h4 class="modal-title">Please enter new folder name: </x:h4>
+                        <x:h4 class="modal-title">Please enter new folder name:</x:h4>
                     </x:div>
                     <x:div class="modal-body">
-                        <textbox type="text" sclass="form-control" id="usr" value="@bind(vm.folderName)" maxlength="25" />
+                        <textbox type="text" sclass="form-control" id="usr" value="@bind(vm.folderName) @validator(vm.rangeValidator)"/>
+                        <label sclass="error" value="@load(vmsgs['string'])" />
                     </x:div>
                     <x:div class="modal-footer">
-                        <x:button type="button" class="btn btn-default" data-dismiss="modal" onClick="@command('editFolderName')">Save</x:button>
+
+                        <x:button type="button" class="btn btn-default" data-dismiss="modal"
+                                  onClick="@command('editFolderName')">Save
+                        </x:button>
                     </x:div>
                 </x:div>
             </x:div>
@@ -59,17 +89,45 @@
             <x:div class="modal-dialog">
                 <x:div class="modal-content">
                     <x:div class="modal-header">
-                        <x:button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#10006;</x:button>
+                        <x:button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            &#10006;</x:button>
                         <x:h4 class="modal-title">Confirmation</x:h4>
                     </x:div>
                     <x:div class="modal-body">
                         <label value="Do you want to delete "/>
                         <label sclass="boldLabel" value="@bind(vm.folderName)"/>
-                        <label value=" folder permanently?"/>
+                        <label value=" folder permanently? It may have some pictures in it."/>
                     </x:div>
                     <x:div class="modal-footer">
                         <x:button type="button" class="btn btn-default" data-dismiss="modal">Leave it</x:button>
-                        <x:button type="button" class="btn btn-danger" onClick="@command('remove', id=vm.selectedId) " data-dismiss="modal">Delete</x:button>
+                        <x:button type="button" class="btn btn-danger" onClick="@command('remove', id=vm.selectedId) "
+                                  data-dismiss="modal">Delete
+                        </x:button>
+                    </x:div>
+                </x:div>
+            </x:div>
+        </x:div>
+        <x:div class="modal fade" id="addFolder" role="dialog">
+            <x:div class="modal-dialog">
+                <x:div class="modal-content">
+                    <x:div class="modal-header">
+                        <x:button type="button" class="close" data-dismiss="modal" onClick="@command('undo')">
+                            &#10006;</x:button>
+                        <x:h4 class="modal-title">Create new folder!</x:h4>
+                    </x:div>
+                    <x:div class="modal-body">
+                        <div form="@id('fol') @load(vm.folder) @save(vm.folder, before='add')">
+                            <x:div class="form-group">
+                                <x:label class="form-control-label">Name:</x:label>
+                                <textbox value="@bind(fol.name)" tabindex="1" sclass="form-control"/>
+                            </x:div>
+                        </div>
+                    </x:div>
+                    <x:div class="modal-footer">
+                        <x:button type="Submit" class="btn btn-default" onClick="@command('add')" data-dismiss="modal" >
+                            Submit
+                        </x:button>
+                        <x:button type="button" class="btn btn-default" data-dismiss="modal" onClick="@command('undo')">Cancel</x:button>
                     </x:div>
                 </x:div>
             </x:div>

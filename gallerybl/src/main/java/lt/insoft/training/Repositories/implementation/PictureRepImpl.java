@@ -3,14 +3,12 @@ package lt.insoft.training.Repositories.implementation;
 import lt.insoft.training.Repositories.PictureRepository;
 import lt.insoft.training.model.*;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 import java.util.List;
 
 @Repository
-@Transactional
 public class PictureRepImpl implements PictureRepository {
 
     private EntityManager manager;
@@ -20,7 +18,6 @@ public class PictureRepImpl implements PictureRepository {
         this.manager = entityManager;
     }
 
-    @Transactional(readOnly=true)
     public Picture getPicture(Long id) {
          return manager.find(Picture.class, id);
     }
@@ -44,7 +41,7 @@ public class PictureRepImpl implements PictureRepository {
         return picture;
     }
 
-    @Transactional
+
     public boolean updatePicture(Picture picture) {
         try{
             manager.merge(picture);
@@ -54,19 +51,13 @@ public class PictureRepImpl implements PictureRepository {
         }
     }
 
-    @Transactional
     public Long insertPicture(Picture picture) {
-        try {
             manager.persist(picture);
             return picture.getId();
-        } catch (PersistenceException pe) {
-            return 0L;
-        }
     }
 
-    @Transactional
     public boolean removePicture(Long id) {
-        Picture pictureInstance = this.getPicture(id);
+        Picture pictureInstance = manager.getReference(Picture.class, id);
         if (pictureInstance != null) {
             manager.remove(pictureInstance);
             return true;
@@ -74,7 +65,6 @@ public class PictureRepImpl implements PictureRepository {
         return false;
     }
 
-    @Transactional
     public List<Picture> getPictures(int from, int amount, Long folderId) {
         if ((from >= 0) && (amount > 0)) {
             CriteriaBuilder builder = manager.getCriteriaBuilder();
@@ -89,8 +79,6 @@ public class PictureRepImpl implements PictureRepository {
             typedQuery.setFirstResult(from);
             typedQuery.setMaxResults(amount);
             List<Picture> pictures = typedQuery.getResultList();
-            //List <Picture> resultList = manager.createQuery(c).getResultList();
-
             return pictures;
         }
         return null;
