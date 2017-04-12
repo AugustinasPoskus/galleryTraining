@@ -6,10 +6,9 @@
     font-weight: bold;
 }
 .buttons {
-    width:100%;
+    right: 10%;
     position: absolute;
     top: 10%;
-    left: 23%;
 }
 .caption {
     width:100%;
@@ -59,6 +58,10 @@
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
+}
+
+.error{
+   color: red;
 }
 
 

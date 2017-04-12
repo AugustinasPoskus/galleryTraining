@@ -45,6 +45,7 @@ public class GalleryViewModel {
     @Command
     @NotifyChange({"availableFolders", "foldersCount", "folder"})
     public void add() {
+        Clients.evalJavaScript("dismissAddFolderModal();");
         folderService.addFolder(folder);
         if (availableFolders.size() < paginationBy) {
             availableFolders.add(folder);
@@ -73,9 +74,12 @@ public class GalleryViewModel {
     }
 
     @Command
-    @NotifyChange("availableFolders")
+    @NotifyChange({"availableFolders","folder"})
     public void editFolderName() {
+        Clients.evalJavaScript("dismissChangeNameModal();");
         String oldName = "";
+        this.folderName = folder.getName();
+        folder = new Folder();
         if (this.containsId(this.selectedId) && !(this.folderName.equals(""))) {
             List<Folder> list = this.getAvailableFolders();
                 for (Folder folder : list) {
@@ -186,21 +190,5 @@ public class GalleryViewModel {
 
     public int getPaginationBy() {
         return paginationBy;
-    }
-
-    public Validator getRangeValidator() {
-        return new AbstractValidator() {
-            public void validate(ValidationContext ctx) {
-                Number maxLength = 15;
-                if (ctx.getProperty().getValue() instanceof String) {
-                    String value = (String) ctx.getProperty().getValue();
-                    if (value.length() > maxLength.longValue()) {
-                        this.addInvalidMessage(ctx, "string", "Your passwords do not match!");
-                    }
-                } else {
-                    this.addInvalidMessage(ctx, "string", "Your passwords do not match!");
-                }
-            }
-        };
     }
 }

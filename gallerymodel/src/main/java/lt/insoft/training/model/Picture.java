@@ -5,6 +5,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "AU_PICTURE")
@@ -15,7 +16,7 @@ public class Picture {
     private Long id;
 
     @Column(name = "DATE_INSERT")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     @Column(name = "QUALITY")
@@ -38,6 +39,12 @@ public class Picture {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FOLDER_ID", nullable = false)
     private Folder folder;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "AU_PICTURE_TAG", joinColumns = {
+            @JoinColumn(name = "PICTURE_ID", nullable = false, updatable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "TAG_ID", nullable = false, updatable = false) })
+    private List<Tag> tags;
 
     public Long getId() {
         return id;
@@ -103,5 +110,13 @@ public class Picture {
 
     public void setThumbnail(Thumbnail thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

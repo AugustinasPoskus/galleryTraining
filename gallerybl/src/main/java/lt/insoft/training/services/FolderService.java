@@ -18,7 +18,6 @@ public class FolderService {
 
     @Autowired
     private FolderRepository folderRep;
-    //private HashMap<Integer, List<Folder>> loadedFolders = new HashMap<Integer, List<Folder>>();
     private int pagedBy = 6;
 
     public FolderService() {

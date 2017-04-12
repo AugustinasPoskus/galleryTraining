@@ -15,13 +15,11 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
-@Transactional
 public class ThumbnailRepImpl implements ThumbnailRepository{
 
     @PersistenceContext
     private EntityManager manager;
 
-    @Transactional
     public List<Thumbnail> getThumbnails(int from, int amount, Long folderId) {
         if ((from >= 0) && (amount > 0)) {
 //            CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();

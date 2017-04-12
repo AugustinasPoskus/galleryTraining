@@ -1,10 +1,7 @@
 package lt.insoft.training.ViewModel;
 
 import lt.insoft.training.ViewModel.Utils.ImageScale;
-import lt.insoft.training.model.Folder;
-import lt.insoft.training.model.Picture;
-import lt.insoft.training.model.PictureData;
-import lt.insoft.training.model.Thumbnail;
+import lt.insoft.training.model.*;
 import lt.insoft.training.services.FolderService;
 import lt.insoft.training.services.PictureService;
 import org.apache.commons.io.IOUtils;
@@ -17,6 +14,7 @@ import org.zkoss.zk.ui.util.Clients;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
@@ -29,6 +27,7 @@ public class ImagesViewModel {
     private Picture picture = new Picture();
     private Picture selectedPicture;
     private Folder folder;
+    private String tags = "";
     private PictureData pictureData = new PictureData();
     private Long selectedThumbnailId;
     private Thumbnail thumbnail = new Thumbnail();
@@ -38,6 +37,7 @@ public class ImagesViewModel {
 
     @Init
     public void init(@ContextParam(ContextType.EXECUTION) Execution execution) {
+        System.out.println(new java.util.Date());
         String parameter = execution.getParameter("folderId");
         try{
             Long folderId = Long.parseLong(parameter);
@@ -102,16 +102,19 @@ public class ImagesViewModel {
     }
 
     @Command
-    @NotifyChange({"pictureThumbnailList", "fileName", "picture"})
+    @NotifyChange({"pictureThumbnailList", "fileName", "picture", "tags"})
     public void add(){
+        Clients.evalJavaScript("dismissFormModal();");
         if(pictureData.getData() != null && thumbnail.getData() != null ){
             System.out.println(picture.getName() + " " + picture.getDescription() + " " + picture.getQuality());
-            pictureService.addPicture(picture, pictureData, thumbnail, folder);
+            List<String> tagList = Arrays.asList(tags.split(","));
+            pictureService.addPicture(picture, pictureData, thumbnail, folder, tagList);
             pictureThumbnailList.add(thumbnail);
         }
         picture = new Picture();
         pictureData = new PictureData();
         thumbnail = new Thumbnail();
+        tags = "";
         this.fileName= "No picture uploaded!";
     }
 
@@ -176,5 +179,21 @@ public class ImagesViewModel {
         this.selectedThumbnailId = selectedThumbnailId;
         System.out.println(selectedThumbnailId);
         this.selectedPicture = pictureService.getPictureInfoById(selectedThumbnailId);
+    }
+
+    public PictureData getPictureData() {
+        return pictureData;
+    }
+
+    public void setPictureData(PictureData pictureData) {
+        this.pictureData = pictureData;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 }

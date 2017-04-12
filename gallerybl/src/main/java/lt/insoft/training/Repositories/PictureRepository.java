@@ -2,6 +2,7 @@ package lt.insoft.training.Repositories;
 
 
 import lt.insoft.training.model.Picture;
+import lt.insoft.training.model.Tag;
 import lt.insoft.training.model.Thumbnail;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface PictureRepository {
     public boolean removePicture(Long id);
     public Picture findPictureByThumbnailId(Long id);
     public List<Picture> getPictures(int from, int amount, Long folderId);
+    //public List<Tag> getPictureTags(Long id);
 }

@@ -49,7 +49,7 @@
             <paging onPaging="@command('paging')"
                     totalSize="@bind(vm.foldersCount)" pageSize="@bind(vm.paginationBy)" activePage="@bind(vm.currentPage)" sclass="pagination2"/>
         </x:div>
-        <x:div id="nameNotChanged" class="modal fade" role="dialog">
+        <x:div id="nameNotChanged" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" >
             <x:div class="modal-dialog">
                 <x:div class="modal-content">
                     <x:div class="modal-header">
@@ -65,27 +65,30 @@
                 </x:div>
             </x:div>
         </x:div>
-        <x:div id="changeFolderNameModal" class="modal fade" role="dialog">
+        <x:div id="changeFolderNameModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" >
             <x:div class="modal-dialog">
                 <x:div class="modal-content">
                     <x:div class="modal-header">
-                        <x:button id="folderName" type="button" class="close" data-dismiss="modal">&#10006;</x:button>
+                        <x:button id="folderName" type="button" class="close" data-dismiss="modal" onClick="@command('undo')">&#10006;</x:button>
                         <x:h4 class="modal-title">Please enter new folder name:</x:h4>
                     </x:div>
                     <x:div class="modal-body">
-                        <textbox type="text" sclass="form-control" id="usr" value="@bind(vm.folderName) @validator(vm.rangeValidator)"/>
-                        <label sclass="error" value="@load(vmsgs['string'])" />
+                        <div form="@id('fx') @load(vm.folder) @save(vm.folder, before='editFolderName') @validator('Validators.folderNameValidator')">
+                            <x:div class="form-group">
+                                <x:label class="form-control-label">Name:</x:label>
+                                <textbox value="@bind(fx.name)" tabindex="1" sclass="form-control"/>
+                                <label sclass="error" value="@load(vmsgs['folderName'])" />
+                            </x:div>
+                        </div>
                     </x:div>
                     <x:div class="modal-footer">
-
-                        <x:button type="button" class="btn btn-default" data-dismiss="modal"
-                                  onClick="@command('editFolderName')">Save
-                        </x:button>
+                        <label visible="@load(empty vmsgs)" value="@load(empty vmsgs ? '' : '', before='add')" />
+                        <button label="Submit" sclass="btn btn-default" onClick="@command('editFolderName')"/>
                     </x:div>
                 </x:div>
             </x:div>
         </x:div>
-        <x:div id="confirmationModal" class="modal fade" role="dialog">
+        <x:div id="confirmationModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" >
             <x:div class="modal-dialog">
                 <x:div class="modal-content">
                     <x:div class="modal-header">
@@ -107,7 +110,7 @@
                 </x:div>
             </x:div>
         </x:div>
-        <x:div class="modal fade" id="addFolder" role="dialog">
+        <x:div class="modal fade" id="addFolder" role="dialog" data-backdrop="static" data-keyboard="false">
             <x:div class="modal-dialog">
                 <x:div class="modal-content">
                     <x:div class="modal-header">
@@ -116,15 +119,16 @@
                         <x:h4 class="modal-title">Create new folder!</x:h4>
                     </x:div>
                     <x:div class="modal-body">
-                        <div form="@id('fol') @load(vm.folder) @save(vm.folder, before='add')">
+                        <div form="@id('fol') @load(vm.folder) @save(vm.folder, before='add') @validator('Validators.folderNameValidator')">
                             <x:div class="form-group">
                                 <x:label class="form-control-label">Name:</x:label>
                                 <textbox value="@bind(fol.name)" tabindex="1" sclass="form-control"/>
+                                <label sclass="error" value="@load(vmsgs['folderName'])" />
                             </x:div>
                         </div>
                     </x:div>
                     <x:div class="modal-footer">
-                        <x:button type="Submit" class="btn btn-default" onClick="@command('add')" data-dismiss="modal" >
+                        <x:button type="Submit" class="btn btn-default" onClick="@command('add')" >
                             Submit
                         </x:button>
                         <x:button type="button" class="btn btn-default" data-dismiss="modal" onClick="@command('undo')">Cancel</x:button>

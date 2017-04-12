@@ -1,6 +1,7 @@
 package lt.insoft.training.model;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -12,10 +13,11 @@ public class Tag {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", unique = true)
     private String name;
 
-    private Set<Picture> pictures;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
+    private List<Picture> pictures;
 
     public Long getId() {
         return id;
@@ -33,11 +35,13 @@ public class Tag {
         this.name = name;
     }
 
-    public Set<Picture> getPictures() {
+    public List<Picture> getPictures() {
         return pictures;
     }
 
-    public void setPictures(Set<Picture> pictures) {
+    public void setPictures(List<Picture> pictures) {
         this.pictures = pictures;
     }
+
+    public Tag() {}
 }

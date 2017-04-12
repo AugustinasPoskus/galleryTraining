@@ -58,10 +58,10 @@ public class FolderRepImpl implements FolderRepository {
     }
 
     public Folder updateFolder(Folder folder, String name) {
+        Folder folderRef = manager.getReference(Folder.class, folder.getId());
         try {
             folder.setName(name);
             Folder newFolder = manager.merge(folder);
-            System.out.println(newFolder.getVersion());
             return newFolder;
         } catch (PersistenceException lockEx) {
             return null;

@@ -15,13 +15,11 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
-@Transactional
 public class PictureDataRepImpl implements PictureDataRepository{
 
     @PersistenceContext
     private EntityManager manager;
 
-    @Transactional
     public List<PictureData> getPicturesThumbnails(int from, int amount) {
         if((from >=0) && (amount > 0)) {
             CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
@@ -37,12 +35,10 @@ public class PictureDataRepImpl implements PictureDataRepository{
         return null;
     }
 
-    @Transactional
     public boolean removePictureData(Long id) {
         return false;
     }
 
-    @Transactional(readOnly=true)
     public PictureData getPictureData(Long id) {
         return manager.find(PictureData.class, id);
     }

@@ -27,7 +27,17 @@ public class PictureService {
     public PictureService(){}
 
     @Transactional
-    public long addPicture(Picture picture, PictureData pictureData, Thumbnail thumbnail, Folder folder){
+    public long addPicture(Picture picture, PictureData pictureData, Thumbnail thumbnail, Folder folder, List<String> tagList){
+        List<Tag> tags = new ArrayList<Tag>();
+        for (String val : tagList) {
+            val = val.trim();
+            if(!val.isEmpty()){
+                Tag tag = new Tag();
+                tag.setName(val);
+                tags.add(tag);
+            }
+        }
+        picture.setTags(tags);
         picture.setPictureData(pictureData);
         picture.setThumbnail(thumbnail);
         picture.setFolder(folder);
@@ -81,4 +91,17 @@ public class PictureService {
         return null;
     }
 
+    public List<Tag> getPictureTags(Long id){
+        Picture picture = this.getPictureByThumbnail(id);
+        if(picture.getTags().size() == 0){
+            System.out.println("saaad");
+            return null;
+        }else{
+            List<Tag> tags = picture.getTags();
+            for(int i=0; i< tags.size() ;i++){
+                System.out.println(tags.get(i).getName());
+            }
+            return tags;
+        }
+    }
 }

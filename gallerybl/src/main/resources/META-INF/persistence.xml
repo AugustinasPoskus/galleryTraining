@@ -6,6 +6,7 @@
         <class>lt.insoft.training.model.Picture</class>
         <class>lt.insoft.training.model.PictureData</class>
         <class>lt.insoft.training.model.Thumbnail</class>
+        <class>lt.insoft.training.model.Tag</class>
         <properties>
             <property name="hibernate.dialect"
                       value="org.hibernate.dialect.Oracle10gDialect" />
