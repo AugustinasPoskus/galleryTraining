@@ -40,11 +40,15 @@ public class Picture {
     @JoinColumn(name = "FOLDER_ID", nullable = false)
     private Folder folder;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "AU_PICTURE_TAG", joinColumns = {
             @JoinColumn(name = "PICTURE_ID", nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = "TAG_ID", nullable = false, updatable = false) })
     private List<Tag> tags;
+
+    @Version
+    @Column(name = "VERSION")
+    private Long version;
 
     public Long getId() {
         return id;
@@ -118,5 +122,13 @@ public class Picture {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }

@@ -16,8 +16,7 @@
                         Sorry, an error has occured, Requested page not found!
                     </x:div>
                     <x:div class="error-actions">
-                        <x:a href="index.zul" class="btn btn-primary btn-lg">
-                            <x:span class="glyphicon glyphicon-home"></x:span>
+                        <x:a href="/index.zul" class="btn btn-primary btn-lg">
                             Take Me Home
                         </x:a>
                     </x:div>

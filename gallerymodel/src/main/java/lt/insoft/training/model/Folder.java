@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "AU_FOLDER")
-public class Folder implements Serializable {
+public class Folder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

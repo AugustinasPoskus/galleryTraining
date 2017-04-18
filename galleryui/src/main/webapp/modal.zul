@@ -1,0 +1,18 @@
+<zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
+    <x:div class="modal fade" id="zkError" role="dialog" data-backdrop="static" data-keyboard="false" >
+        <x:div class="modal-dialog">
+            <x:div class="modal-content">
+                <x:div class="modal-header">
+                    <x:button type="button" class="close" data-dismiss="modal">&#10006;</x:button>
+                    <x:h4 class="modal-title">Warning!</x:h4>
+                </x:div>
+                <x:div class="modal-body">
+                    <x:p id="message"/>
+                </x:div>
+                <x:div class="modal-footer">
+                    <x:button type="button" class="btn btn-default" data-dismiss="modal">Close</x:button>
+                </x:div>
+            </x:div>
+        </x:div>
+    </x:div>
+</zk>

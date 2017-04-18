@@ -45,8 +45,14 @@ textarea {
     text-align: center;
 }
 
-.thumbnail {
-    background-color: transparent;
-    border: 0 none;
-    padding: 0;
+.picture{
+     padding-bottom: 30px;
+}
+
+img:hover {
+    cursor:pointer;
+}
+
+.enlargeImageModalSource{
+    width: 100%;
 }

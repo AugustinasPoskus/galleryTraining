@@ -1,21 +1,16 @@
 package lt.insoft.training.ViewModel;
 
+import Validators.NameValidator;
 import lt.insoft.training.model.Folder;
 import lt.insoft.training.services.FolderService;
-import org.hibernate.TransactionException;
-import org.springframework.orm.jpa.JpaOptimisticLockingFailureException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zkoss.bind.ValidationContext;
-import org.zkoss.bind.Validator;
 import org.zkoss.bind.annotation.*;
-import org.zkoss.bind.validator.AbstractValidator;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.ListModelList;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
 
 public class GalleryViewModel {
@@ -28,13 +23,14 @@ public class GalleryViewModel {
     private int currentPage = 0;
     private final int paginationBy = 6;
     ListModelList<Folder> availableFolders;
+    NameValidator folderNameValidator = new NameValidator();
 
     @Init
     public void init() {
         //Executions.sendRedirect("pageNotFound.zul");
         foldersCount = folderService.foldersCount();
         int firstFolderIndex = currentPage * paginationBy;
-        availableFolders = new ListModelList(folderService.getFolders(firstFolderIndex, paginationBy, currentPage));
+        availableFolders = new ListModelList(folderService.getFolders(firstFolderIndex, paginationBy));
     }
 
     @Command
@@ -63,12 +59,12 @@ public class GalleryViewModel {
                     availableFolders.removeIf(p -> p.getId().equals(id));
                     foldersCount--;
                     if (foldersCount > currentPage * paginationBy + availableFolders.size()) {
-                        availableFolders.add(folderService.getFolders(paginationBy - 1, 1, currentPage).get(0));
+                        availableFolders.add(folderService.getFolders(paginationBy - 1, 1).get(0));
                     }
                 }
             } catch (JpaSystemException jpaE){
                 String message = "Folder was already deleted! Please reload page and repeat your operation!";
-                Clients.evalJavaScript("failedToChangeFolder('" + message + "');");
+                Clients.evalJavaScript("modalWarning('" + message + "');");
             }
         }
     }
@@ -92,7 +88,7 @@ public class GalleryViewModel {
                         } catch(JpaSystemException optLocke){
                             folder.setName(oldName);
                             String message = "Folder name was already changed! Please reload page and repeat your operation!";
-                            Clients.evalJavaScript("failedToChangeFolder('" + message + "');");
+                            Clients.evalJavaScript("modalWarning('" + message + "');");
                             break;
                         }
                     }
@@ -177,7 +173,7 @@ public class GalleryViewModel {
     @NotifyChange({"foldersCount","availableFolders"})
     public void paging(){
         foldersCount = folderService.foldersCount();
-        availableFolders = new ListModelList(folderService.getFolders(currentPage * paginationBy, paginationBy, currentPage));
+        availableFolders = new ListModelList(folderService.getFolders(currentPage * paginationBy, paginationBy));
     }
 
     public ListModelList<Folder> getAvailableFolders() {
@@ -190,5 +186,13 @@ public class GalleryViewModel {
 
     public int getPaginationBy() {
         return paginationBy;
+    }
+
+    public NameValidator getFolderNameValidator() {
+        return folderNameValidator;
+    }
+
+    public void setFolderNameValidator(NameValidator folderNameValidator) {
+        this.folderNameValidator = folderNameValidator;
     }
 }

@@ -1,16 +1,21 @@
-.disabled>.page-link {
-    cursor: default;
-    pointer-events: none;
-}
-.pagination>.disabled>span:hover, li#prevbtn, li#nextbtn .pagination>.disabled>span {
-    cursor: not-allowed;
-}
-.pagination>.disabled>a{
-    background-color: #449d44;
-}
-.pagination>.disabled>a>span {
-    color: #fff;
-}
-.paginationNav{
+.pagination2{
+    border-bottom: none;
+    background: none;
     text-align: center;
+    height: auto;
+    position: static;
+}
+
+.emptyList{
+  text-align: center;
+  height: 300px;
+  width: 100%;
+}
+
+.emptyLabel{
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
 }

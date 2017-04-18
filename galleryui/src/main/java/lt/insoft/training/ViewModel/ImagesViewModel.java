@@ -1,17 +1,25 @@
 package lt.insoft.training.ViewModel;
 
+import Validators.NameValidator;
+import Validators.QualityValidator;
+import Validators.TagsValidator;
+import Validators.UploadValidator;
 import lt.insoft.training.ViewModel.Utils.ImageScale;
 import lt.insoft.training.model.*;
 import lt.insoft.training.services.FolderService;
 import lt.insoft.training.services.PictureService;
 import org.apache.commons.io.IOUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Execution;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zul.ListModelList;
 
+import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -33,22 +41,28 @@ public class ImagesViewModel {
     private Thumbnail thumbnail = new Thumbnail();
     private String fileName = "No picture uploaded!";
     private List<Thumbnail> pictureThumbnailList;
-    private int paginationBy = 8;
+    private int picturesCount = 0;
+    private int currentPage = 0;
+    private final int paginationBy = 8;
+    NameValidator pictureNameValidator = new NameValidator();
+    QualityValidator qualityValidator = new QualityValidator();
+    TagsValidator tagsValidator = new TagsValidator();
+    UploadValidator uploadValidator = new UploadValidator();
 
     @Init
     public void init(@ContextParam(ContextType.EXECUTION) Execution execution) {
-        System.out.println(new java.util.Date());
         String parameter = execution.getParameter("folderId");
         try{
             Long folderId = Long.parseLong(parameter);
             folder = folderService.getFolder(folderId);
             if(folder == null){
-
+                Executions.sendRedirect("pageNotFound.zul");
             } else{
+                picturesCount = pictureService.getPicturesCount(folder.getId());
                 pictureThumbnailList =  pictureService.getPictureThumbnail(0,paginationBy, folder.getId());
             }
         }catch (NumberFormatException ex) {
-
+            Executions.sendRedirect("pageNotFound.zul");
         }
     }
 
@@ -67,21 +81,34 @@ public class ImagesViewModel {
             byte[] bytes = IOUtils.toByteArray(is);
             return bytes;
         } catch (IOException e) {
-            System.out.println(e);
+            Clients.evalJavaScript("modalWarning(" + e.getLocalizedMessage() + ");");
         }
         return new byte[0];
     }
 
     @Command
-    @NotifyChange("selectedPicture")
+    @NotifyChange({"selectedPicture","tags"})
     public void setImageInformation(@BindingParam("id") Long id){
-        selectedPicture = pictureService.getPictureInfoById(id);
+        try {
+            selectedPicture = pictureService.getPictureInfoById(id);
+            tags = "";
+            List<Tag> list = selectedPicture.getTags();
+            for(int i=0;i<list.size();i++){
+                tags += list.get(i).getName();
+                if(i + 1 != list.size()){
+                    tags += ", ";
+                }
+            }
+        }catch (NoResultException e){
+            Clients.evalJavaScript("modalWarning( '" + e.getLocalizedMessage() + "' );");
+        }
     }
 
     @Command
+    @NotifyChange("selectedPicture")
     public void open(@BindingParam("id") Long id){
-        Picture pictureInfo = pictureService.getPictureInfoById(id);
-        System.out.println(pictureInfo.getId() + " " + pictureInfo.getName() + " " + pictureInfo.getDescription());
+        selectedPicture = pictureService.getPictureInfoById(id);
+        Clients.evalJavaScript("openFullPicture();");
     }
 
     @Command
@@ -91,7 +118,7 @@ public class ImagesViewModel {
             if (!image.getContentType().startsWith("image/")) {
                 //Messagebox.show("Not an image: " + image.getName(), "Error", Messagebox.OK, Messagebox.ERROR);
                 String message = "The request was rejected because the file (" + image.getName() + ") is not an image!";
-                Clients.evalJavaScript("failedUpload( '" + message + "' );");
+                Clients.evalJavaScript("modalWarning( '" + message + "' );");
                 return;
             }
             this.fileName = "Attached: " + image.getName();
@@ -102,14 +129,16 @@ public class ImagesViewModel {
     }
 
     @Command
-    @NotifyChange({"pictureThumbnailList", "fileName", "picture", "tags"})
+    @NotifyChange({"pictureThumbnailList", "fileName", "picture", "tags", "picturesCount" })
     public void add(){
         Clients.evalJavaScript("dismissFormModal();");
         if(pictureData.getData() != null && thumbnail.getData() != null ){
-            System.out.println(picture.getName() + " " + picture.getDescription() + " " + picture.getQuality());
             List<String> tagList = Arrays.asList(tags.split(","));
             pictureService.addPicture(picture, pictureData, thumbnail, folder, tagList);
-            pictureThumbnailList.add(thumbnail);
+            if(pictureThumbnailList.size() < paginationBy){
+                pictureThumbnailList.add(thumbnail);
+            }
+            picturesCount++;
         }
         picture = new Picture();
         pictureData = new PictureData();
@@ -119,10 +148,18 @@ public class ImagesViewModel {
     }
 
     @Command
-    @NotifyChange({"pictureThumbnailList"})
+    @NotifyChange({"pictureThumbnailList", "picturesCount"})
     public void remove(@BindingParam("id") Long id){
-        pictureService.removePictureByThumbnail(id);
-        pictureThumbnailList.removeIf(p -> p.getId().equals(id));
+        try{
+            pictureService.removePictureByThumbnail(id);
+            pictureThumbnailList.removeIf(p -> p.getId().equals(id));
+            picturesCount--;
+            if(picturesCount > currentPage * paginationBy + pictureThumbnailList.size()){
+                pictureThumbnailList.add(pictureService.getPictureThumbnail(paginationBy - 1, 1, folder.getId()).get(0));
+            }
+        }catch(NoResultException e){
+            Clients.evalJavaScript("modalWarning( 'Picture was already modified, please reload page and repeat your action!' );");
+        }
     }
 
     @Command
@@ -132,6 +169,11 @@ public class ImagesViewModel {
         pictureData = new PictureData();
         thumbnail = new Thumbnail();
         this.fileName= "No picture uploaded!";
+    }
+
+    @Command
+    public void update(){
+        System.out.println(selectedPicture.getName() + " " + selectedPicture.getDescription() + " " + this.tags);
     }
 
     public List<Thumbnail> getPictureThumbnailList() {
@@ -158,10 +200,6 @@ public class ImagesViewModel {
         this.selectedPicture = selectedPicture;
     }
 
-    public void setSelectedPicture(Long id) {
-        this.selectedPicture = selectedPicture;
-    }
-
     public Folder getFolder() {
         return folder;
     }
@@ -177,8 +215,12 @@ public class ImagesViewModel {
     @Command
     public void setSelectedThumbnailId(@BindingParam("id") Long selectedThumbnailId) {
         this.selectedThumbnailId = selectedThumbnailId;
-        System.out.println(selectedThumbnailId);
-        this.selectedPicture = pictureService.getPictureInfoById(selectedThumbnailId);
+        try {
+            this.selectedPicture = pictureService.getPictureInfoById(selectedThumbnailId);
+            Clients.evalJavaScript("confirmationModal();");
+        }catch (NoResultException e){
+            Clients.evalJavaScript("modalWarning( 'Picture was already modified, please reload page and repeat your action!' );");
+        }
     }
 
     public PictureData getPictureData() {
@@ -196,4 +238,53 @@ public class ImagesViewModel {
     public void setTags(String tags) {
         this.tags = tags;
     }
+
+    public int getPicturesCount() {
+        return picturesCount;
+    }
+
+    public void setPicturesCount(int picturesCount) {
+        this.picturesCount = picturesCount;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public int getPaginationBy() {
+        return paginationBy;
+    }
+
+    @Command
+    @NotifyChange({"picturesCount","pictureThumbnailList"})
+    public void paging(){
+        picturesCount = pictureService.getPicturesCount(folder.getId());
+        pictureThumbnailList =  pictureService.getPictureThumbnail(currentPage * paginationBy, paginationBy, folder.getId());
+    }
+
+    public PictureService getPictureService() {
+        return pictureService;
+    }
+
+    public NameValidator getPictureNameValidator() {
+        return pictureNameValidator;
+    }
+
+    public QualityValidator getQualityValidator() {
+        return qualityValidator;
+    }
+
+    public TagsValidator getTagsValidator() {
+        return tagsValidator;
+    }
+
+    public UploadValidator getUploadValidator() {
+        return uploadValidator;
+    }
+
+
 }

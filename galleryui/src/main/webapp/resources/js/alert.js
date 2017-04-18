@@ -1,17 +1,16 @@
 
 jq.alert = function (msg, opt) {
-    $(".modal-body #msg").text( msg );
-    $('#uploadError').modal('show');
+    $(".modal-body #message").text( msg );
+    $('#zkError').modal('show');
 }
 
-function failedUpload(msg) {
-    $(".modal-body #msg").text( msg );
-    $('#uploadError').modal('show');
+function modalWarning(msg) {
+    $(".modal-body #message").text( msg );
+    $('#zkError').modal('show');
 }
 
-function failedToChangeFolder(message) {
-    $(".modal-body #message").text( message );
-    $('#nameNotChanged').modal('show');
+function confirmationModal() {
+    $('#confirmationModal').modal('show');
 }
 
 function dismissFormModal() {
@@ -24,4 +23,8 @@ function dismissChangeNameModal() {
 
 function dismissAddFolderModal() {
    $('#addFolder').modal('toggle');
+}
+
+function openFullPicture(){
+    $('#fullPicture').modal('show');
 }

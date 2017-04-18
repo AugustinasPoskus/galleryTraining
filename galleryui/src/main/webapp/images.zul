@@ -7,11 +7,75 @@
     <x:link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style src="resources/css/images.css"/>
+    <style src="resources/css/pagination.css"/>
     <x:div apply="org.zkoss.bind.BindComposer"
            viewModel="@id('vm') @init('lt.insoft.training.ViewModel.ImagesViewModel')"
            validationMessages="@id('vmsgs')">
         <x:div class="container">
-            <x:div class="modal fade" id="myModal" role="dialog" data-backdrop="static" data-keyboard="false" >
+            <x:div class="modal fade" id="fullPicture" tabindex="-1" role="dialog" aria-labelledby="enlargeImageModal" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
+                <x:div class="modal-dialog modal-lg" role="document">
+                    <x:div class="modal-content">
+                        <x:div class="modal-header">
+                            <label sclass="gallery-title" value="@load(vm.selectedPicture.name)"/>
+                            <x:button type="button" class="close" data-dismiss="modal" aria-label="Close"><x:span aria-hidden="true">×</x:span></x:button>
+                        </x:div>
+                        <x:div class="modal-body">
+                            <image id="image-gallery-image" sclass="enlargeImageModalSource"
+                                   content="@bind(vm.selectedPicture.pictureData.data) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')"/>
+                        </x:div>
+                    </x:div>
+                </x:div>
+            </x:div>
+            <x:div class="modal fade" id="editPicture" role="dialog" data-backdrop="static" data-keyboard="false">
+                <x:div class="modal-dialog">
+                    <x:div class="modal-content">
+                        <x:div class="modal-header">
+                            <x:button type="button" class="close" onClick="@command('undo')" data-dismiss="modal">
+                                &#10006;</x:button>
+                            <x:h4 class="modal-title">Edit Picture Information</x:h4>
+                        </x:div>
+                        <x:div class="modal-body">
+                            <div form="@id('pict') @load(vm.selectedPicture) @save(vm.selectedPicture, before='update')">
+                                <x:div class="form-group">
+                                    <x:label class="form-control-label">Name:</x:label>
+                                    <textbox id="ePictureName"
+                                             value="@bind(pict.name) @validator(vm.pictureNameValidator, maxLength=15, minLength=3)"
+                                             tabindex="1" sclass="form-control"/>
+                                    <label sclass="error" value="@bind(vmsgs[ePictureName])"/>
+                                </x:div>
+                                <x:div class="form-group">
+                                    <x:label class="form-control-label">Description:</x:label>
+                                    <textbox id="ePictureDescription" rows="5"
+                                             value="@bind(pict.description) @validator(vm.pictureNameValidator, maxLength=255, minLength=3)"
+                                             tabindex="2"
+                                             sclass="form-control"/>
+                                    <label sclass="error" value="@bind(vmsgs[ePictureDescription])"/>
+                                </x:div>
+                                <x:div class="form-group">
+                                    <x:label class="form-control-label">Quality:</x:label>
+                                    <textbox id="ePictureQuality"
+                                             value="@bind(pict.quality) @validator(vm.qualityValidator)" tabindex="3"
+                                             sclass="form-control"/>
+                                    <label sclass="error" value="@bind(vmsgs[ePictureQuality])"/>
+                                </x:div>
+                                <x:div class="form-group">
+                                    <x:label class="form-control-label">Tags:</x:label>
+                                    <textbox id="ePictureTags" value="@bind(vm.tags) @validator(vm.tagsValidator)"
+                                             tabindex="4" sclass="form-control"/>
+                                    <label sclass="error" value="@bind(vmsgs[ePictureTags])"/>
+                                </x:div>
+                            </div>
+                        </x:div>
+                        <x:div class="modal-footer">
+                            <button label="Submit" sclass="btn btn-default" onClick="@command('update')"/>
+                            <x:button type="button" class="btn btn-default" onClick="@command('undo')"
+                                      data-dismiss="modal">Close
+                            </x:button>
+                        </x:div>
+                    </x:div>
+                </x:div>
+            </x:div>
+            <x:div class="modal fade" id="myModal" role="dialog" data-backdrop="static" data-keyboard="false">
                 <x:div class="modal-dialog">
                     <x:div class="modal-content">
                         <x:div class="modal-header">
@@ -20,40 +84,47 @@
                             <x:h4 class="modal-title">Upload picture</x:h4>
                         </x:div>
                         <x:div class="modal-body">
-                            <div form="@id('pic') @load(vm.picture) @save(vm.picture, before='add') @validator('Validators.ImageFormValidator', upload=vm.pictureData, tags= vm.tags)">
+                            <div form="@id('pic') @load(vm.picture) @save(vm.picture, before='add') @validator(vm.uploadValidator, upload=vm.pictureData)">
                                 <x:div class="form-group">
                                     <x:label class="form-control-label">Name:</x:label>
-                                    <textbox value="@bind(pic.name)" tabindex="1" sclass="form-control"/>
-                                    <label sclass="error" value="@load(vmsgs['name'])" />
+                                    <textbox id="pictureName"
+                                             value="@bind(pic.name) @validator(vm.pictureNameValidator, maxLength=15, minLength=3)"
+                                             tabindex="1" sclass="form-control"/>
+                                    <label sclass="error" value="@bind(vmsgs[pictureName])"/>
                                 </x:div>
                                 <x:div class="form-group">
                                     <x:label class="form-control-label">Description:</x:label>
-                                    <textbox rows="5" value="@bind(pic.description)" tabindex="2"
+                                    <textbox id="pictureDescription" rows="5"
+                                             value="@bind(pic.description) @validator(vm.pictureNameValidator, maxLength=255, minLength=3)"
+                                             tabindex="2"
                                              sclass="form-control"/>
-                                    <label sclass="error" value="@load(vmsgs['description'])" />
+                                    <label sclass="error" value="@bind(vmsgs[pictureDescription])"/>
                                 </x:div>
                                 <x:div class="form-group">
                                     <x:label class="form-control-label">Quality:</x:label>
-                                    <textbox value="@bind(pic.quality)" tabindex="3" sclass="form-control"/>
-                                    <label sclass="error" value="@load(vmsgs['quality'])" />
+                                    <textbox id="pictureQuality"
+                                             value="@bind(pic.quality) @validator(vm.qualityValidator)" tabindex="3"
+                                             sclass="form-control"/>
+                                    <label sclass="error" value="@bind(vmsgs[pictureQuality])"/>
                                 </x:div>
                                 <x:div class="form-group">
                                     <x:label class="form-control-label">Tags:</x:label>
-                                    <textbox value="@bind(vm.tags)" tabindex="4" sclass="form-control"/>
-                                    <label sclass="error" value="@load(vmsgs['tags'])" />
+                                    <textbox id="pictureTags" value="@bind(vm.tags) @validator(vm.tagsValidator)"
+                                             tabindex="4" sclass="form-control"/>
+                                    <label sclass="error" value="@bind(vmsgs[pictureTags])"/>
                                 </x:div>
                                 <x:div class="form-group">
                                     <x:div>
-                                        <button label="Upload Image" upload="true,maxsize=10000,multiple=false"
+                                        <button id="pictureUpload" label="Upload Image"
+                                                upload="true,maxsize=10000,multiple=false"
                                                 onUpload="@command('doUploadFile', file=event.media)"/>
                                         <label value="@bind(vm.fileName)"/>
                                     </x:div>
-                                    <label sclass="error block" value="@load(vmsgs['upload'])" />
+                                    <label sclass="error block" value="@load(vmsgs['pictureUpload'])"/>
                                 </x:div>
                             </div>
                         </x:div>
                         <x:div class="modal-footer">
-                            <label visible="@load(empty vmsgs)" value="@load(empty vmsgs ? '' : '', before='add')" />
                             <button label="Submit" sclass="btn btn-default" onClick="@command('add')"/>
                             <x:button type="button" class="btn btn-default" onClick="@command('undo')"
                                       data-dismiss="modal">Close
@@ -62,7 +133,7 @@
                     </x:div>
                 </x:div>
             </x:div>
-            <x:div class="modal fade" id="showInfo" role="dialog" data-backdrop="static" data-keyboard="false" >
+            <x:div class="modal fade" id="showInfo" role="dialog" data-backdrop="static" data-keyboard="false">
                 <x:div class="modal-dialog">
                     <x:div class="modal-content">
                         <x:div class="modal-header">
@@ -88,8 +159,8 @@
                             </x:div>
                             <x:div class="form-group">
                                 <x:label class="form-control-label">Tags:</x:label>
-                                <x:div visible="@bind(empty vm.selectedPicture.tags)" class="emptyList inline">
-                                        <label value="This picture don't have any tags!" />
+                                <x:div visible="@bind(empty vm.selectedPicture.tags)" class="emptyTags inline">
+                                    <label value="This picture don't have any tags!"/>
                                 </x:div>
                                 <x:div class="inline" children="@bind(vm.selectedPicture.tags)">
                                     <template name="children">
@@ -106,23 +177,8 @@
                     </x:div>
                 </x:div>
             </x:div>
-            <x:div class="modal fade" id="uploadError" role="dialog" data-backdrop="static" data-keyboard="false" >
-                <x:div class="modal-dialog">
-                    <x:div class="modal-content">
-                        <x:div class="modal-header">
-                            <x:button type="button" class="close" data-dismiss="modal">&#10006;</x:button>
-                            <x:h4 class="modal-title">Warning!</x:h4>
-                        </x:div>
-                        <x:div class="modal-body">
-                            <x:p id="msg"/>
-                        </x:div>
-                        <x:div class="modal-footer">
-                            <x:button type="button" class="btn btn-default" data-dismiss="modal">Close</x:button>
-                        </x:div>
-                    </x:div>
-                </x:div>
-            </x:div>
-            <x:div id="confirmationModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" >
+            <include src="modal.zul"/>
+            <x:div id="confirmationModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
                 <x:div class="modal-dialog">
                     <x:div class="modal-content">
                         <x:div class="modal-header">
@@ -137,7 +193,8 @@
                         </x:div>
                         <x:div class="modal-footer">
                             <x:button type="button" class="btn btn-default" data-dismiss="modal">Leave it</x:button>
-                            <x:button type="button" class="btn btn-danger" onClick="@command('remove', id=vm.selectedThumbnailId)"
+                            <x:button type="button" class="btn btn-danger"
+                                      onClick="@command('remove', id=vm.selectedThumbnailId)"
                                       data-dismiss="modal">Delete
                             </x:button>
                         </x:div>
@@ -157,21 +214,31 @@
             <x:div class=" col-lg-12 row" children="@bind(vm.pictureThumbnailList)">
                 <template name="children">
                     <x:div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                        <x:div class="col-lg-12 thumbnail text-center">
+                        <x:div class="col-lg-12 picture text-center">
                             <image content="@bind(each.data) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')"
                                    onClick="@command('open', id=each.id)" sclass="imageBorder"/>
                             <x:div class="buttons">
                                 <x:i class="material-icons" data-toggle="modal" data-target="#showInfo"
-                                     onClick="@command('setImageInformation', id=each.id)" title="Information">info_outline
+                                     onClick="@command('setImageInformation', id=each.id)" title="Information">
+                                    info_outline
                                 </x:i>
-                                <x:i class="material-icons" data-toggle="modal" data-target="#changeFolderNameModal" title="Edit">edit</x:i>
-                                <x:i class="material-icons" data-toggle="modal" data-target="#confirmationModal"
-                                     onClick="@command('setSelectedThumbnailId', id=each.id)">delete</x:i>
+                                <x:i class="material-icons" data-toggle="modal" data-target="#editPicture" title="Edit" onClick="@command('setImageInformation', id=each.id)">edit</x:i>
+                                <x:i class="material-icons" data-toggle="modal"
+                                     onClick="@command('setSelectedThumbnailId', id=each.id)" title="Delete">delete
+                                </x:i>
                             </x:div>
                         </x:div>
                     </x:div>
                 </template>
             </x:div>
+            <x:div visible="@bind(vm.picturesCount eq 0)" class="emptyList">
+                <x:div class="emptyLabel">
+                    <x:h1>There is no pictures added!</x:h1>
+                </x:div>
+            </x:div>
+            <paging onPaging="@command('paging')"
+                    totalSize="@bind(vm.picturesCount)" pageSize="@bind(vm.paginationBy)"
+                    activePage="@bind(vm.currentPage)" sclass="pagination2"/>
         </x:div>
     </x:div>
 </zk>

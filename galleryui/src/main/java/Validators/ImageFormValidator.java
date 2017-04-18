@@ -43,7 +43,7 @@ public class ImageFormValidator extends AbstractValidator {
     }
 
     private void validateTags(ValidationContext ctx, String tags) {
-        if(!tags.matches("^\\s*[\\w]+(\\s*,\\s*[\\w]+){0,5}$")){
+        if(!tags.matches("^$|^\\s*[\\w]+(\\s*,\\s*[\\w]+){0,5}$")){
             this.addInvalidMessage(ctx, "tags", "Please enter 0-6 tags seperated by commas!");
         }
     }
