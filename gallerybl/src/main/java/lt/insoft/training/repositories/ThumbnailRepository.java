@@ -1,4 +1,4 @@
-package lt.insoft.training.Repositories;
+package lt.insoft.training.repositories;
 
 import lt.insoft.training.model.Thumbnail;
 

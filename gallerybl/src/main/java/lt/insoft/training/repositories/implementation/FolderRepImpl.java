@@ -1,6 +1,6 @@
-package lt.insoft.training.Repositories.implementation;
+package lt.insoft.training.repositories.implementation;
 
-import lt.insoft.training.Repositories.FolderRepository;
+import lt.insoft.training.repositories.FolderRepository;
 import lt.insoft.training.model.Folder;
 import lt.insoft.training.model.Folder_;
 import org.springframework.stereotype.Repository;
@@ -15,7 +15,7 @@ public class FolderRepImpl implements FolderRepository {
     @PersistenceContext
     private EntityManager manager;
 
-    public Folder getFolder(Long id){
+    public Folder getFolder(Long id) {
         if (!id.equals(null)) {
             return manager.find(Folder.class, id);
         }
@@ -39,11 +39,11 @@ public class FolderRepImpl implements FolderRepository {
     }
 
     public boolean removeFolder(Long id) {
-        try{
-            Folder folder = manager.getReference(Folder.class,id);
+        try {
+            Folder folder = manager.getReference(Folder.class, id);
             manager.remove(folder);
             return true;
-        } catch (PersistenceException pe){
+        } catch (PersistenceException pe) {
             return false;
         }
     }

@@ -28,3 +28,7 @@ function dismissAddFolderModal() {
 function openFullPicture(){
     $('#fullPicture').modal('show');
 }
+
+function dismissEdit(){
+    $('#editPicture').modal('toggle');
+}

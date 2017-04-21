@@ -1,6 +1,6 @@
 package lt.insoft.training.ViewModel;
 
-import Validators.NameValidator;
+import Validators.LengthValidator;
 import lt.insoft.training.model.Folder;
 import lt.insoft.training.services.FolderService;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -21,16 +21,15 @@ public class GalleryViewModel {
     private Long selectedId;
     private int foldersCount = 0;
     private int currentPage = 0;
-    private final int paginationBy = 6;
+    private final int PAGINATION_BY = 6;
     ListModelList<Folder> availableFolders;
-    NameValidator folderNameValidator = new NameValidator();
+    LengthValidator folderNameValidator = new LengthValidator();
 
     @Init
     public void init() {
-        //Executions.sendRedirect("pageNotFound.zul");
         foldersCount = folderService.foldersCount();
-        int firstFolderIndex = currentPage * paginationBy;
-        availableFolders = new ListModelList(folderService.getFolders(firstFolderIndex, paginationBy));
+        int firstFolderIndex = currentPage * PAGINATION_BY;
+        availableFolders = new ListModelList(folderService.getFolders(firstFolderIndex, PAGINATION_BY));
     }
 
     @Command
@@ -43,7 +42,7 @@ public class GalleryViewModel {
     public void add() {
         Clients.evalJavaScript("dismissAddFolderModal();");
         folderService.addFolder(folder);
-        if (availableFolders.size() < paginationBy) {
+        if (availableFolders.size() < PAGINATION_BY) {
             availableFolders.add(folder);
         }
         foldersCount++;
@@ -51,18 +50,18 @@ public class GalleryViewModel {
     }
 
     @Command
-    @NotifyChange({"availableFolders" , "foldersCount"})
+    @NotifyChange({"availableFolders", "foldersCount"})
     public void remove(@BindingParam("id") Long id) {
         if (this.containsId(id)) {
-            try{
+            try {
                 if (folderService.removeFolder(id)) {
                     availableFolders.removeIf(p -> p.getId().equals(id));
                     foldersCount--;
-                    if (foldersCount > currentPage * paginationBy + availableFolders.size()) {
-                        availableFolders.add(folderService.getFolders(paginationBy - 1, 1).get(0));
+                    if (foldersCount > currentPage * PAGINATION_BY + availableFolders.size()) {
+                        availableFolders.add(folderService.getFolders(PAGINATION_BY - 1, 1).get(0));
                     }
                 }
-            } catch (JpaSystemException jpaE){
+            } catch (JpaSystemException jpaE) {
                 String message = "Folder was already deleted! Please reload page and repeat your operation!";
                 Clients.evalJavaScript("modalWarning('" + message + "');");
             }
@@ -70,7 +69,7 @@ public class GalleryViewModel {
     }
 
     @Command
-    @NotifyChange({"availableFolders","folder"})
+    @NotifyChange({"availableFolders", "folder"})
     public void editFolderName() {
         Clients.evalJavaScript("dismissChangeNameModal();");
         String oldName = "";
@@ -78,28 +77,27 @@ public class GalleryViewModel {
         folder = new Folder();
         if (this.containsId(this.selectedId) && !(this.folderName.equals(""))) {
             List<Folder> list = this.getAvailableFolders();
-                for (Folder folder : list) {
-                    if (folder.getId().equals(this.selectedId)) {
-                        try{
-                            oldName = folder.getName();
-                            folder = folderService.updateFolder(folder , this.folderName);
-                            this.mergeFolders(folder);
-                            break;
-                        } catch(JpaSystemException optLocke){
-                            folder.setName(oldName);
-                            String message = "Folder name was already changed! Please reload page and repeat your operation!";
-                            Clients.evalJavaScript("modalWarning('" + message + "');");
-                            break;
-                        }
+            for (Folder folder : list) {
+                if (folder.getId().equals(this.selectedId)) {
+                    try {
+                        oldName = folder.getName();
+                        folder = folderService.updateFolder(folder, this.folderName);
+                        this.mergeFolders(folder);
+                        break;
+                    } catch (JpaSystemException optLocke) {
+                        folder.setName(oldName);
+                        String message = "Folder name was already changed! Please reload page and repeat your operation!";
+                        Clients.evalJavaScript("modalWarning('" + message + "');");
+                        break;
                     }
-
                 }
+            }
         }
     }
 
-    private void mergeFolders(Folder folder){
-        for (int i=0;i<availableFolders.size();i++) {
-            if(availableFolders.get(i).getId().equals(folder.getId())){
+    private void mergeFolders(Folder folder) {
+        for (int i = 0; i < availableFolders.size(); i++) {
+            if (availableFolders.get(i).getId().equals(folder.getId())) {
                 availableFolders.set(i, folder);
                 break;
             }
@@ -141,7 +139,7 @@ public class GalleryViewModel {
 
     @Command
     @NotifyChange({"folder"})
-    public void undo(){
+    public void undo() {
         folder = new Folder();
     }
 
@@ -170,10 +168,10 @@ public class GalleryViewModel {
     }
 
     @Command
-    @NotifyChange({"foldersCount","availableFolders"})
-    public void paging(){
+    @NotifyChange({"foldersCount", "availableFolders"})
+    public void paging() {
         foldersCount = folderService.foldersCount();
-        availableFolders = new ListModelList(folderService.getFolders(currentPage * paginationBy, paginationBy));
+        availableFolders = new ListModelList(folderService.getFolders(currentPage * PAGINATION_BY, PAGINATION_BY));
     }
 
     public ListModelList<Folder> getAvailableFolders() {
@@ -184,15 +182,15 @@ public class GalleryViewModel {
         this.availableFolders = availableFolders;
     }
 
-    public int getPaginationBy() {
-        return paginationBy;
+    public int getPAGINATION_BY() {
+        return PAGINATION_BY;
     }
 
-    public NameValidator getFolderNameValidator() {
+    public LengthValidator getFolderNameValidator() {
         return folderNameValidator;
     }
 
-    public void setFolderNameValidator(NameValidator folderNameValidator) {
+    public void setFolderNameValidator(LengthValidator folderNameValidator) {
         this.folderNameValidator = folderNameValidator;
     }
 }

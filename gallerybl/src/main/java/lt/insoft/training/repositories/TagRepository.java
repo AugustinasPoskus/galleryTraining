@@ -1,4 +1,4 @@
-package lt.insoft.training.Repositories;
+package lt.insoft.training.repositories;
 
 import lt.insoft.training.model.Tag;
 
@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface TagRepository {
     public List<Tag> getAllTags();
-    public boolean insertTag(Tag tag);
+    public Tag insertTag(Tag tag);
+    public List<Tag> findTag(String name);
 }

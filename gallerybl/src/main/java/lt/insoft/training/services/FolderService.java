@@ -1,6 +1,6 @@
 package lt.insoft.training.services;
 
-import lt.insoft.training.Repositories.FolderRepository;
+import lt.insoft.training.repositories.FolderRepository;
 import lt.insoft.training.model.Folder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class FolderService {
     public FolderService() {
     }
 
-    public Folder getFolder(Long id){
+    public Folder getFolder(Long id) {
         return folderRep.getFolder(id);
     }
 

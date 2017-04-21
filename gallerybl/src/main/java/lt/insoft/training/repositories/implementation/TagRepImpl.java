@@ -1,9 +1,9 @@
-package lt.insoft.training.Repositories.implementation;
+package lt.insoft.training.repositories.implementation;
 
-import lt.insoft.training.Repositories.TagRepository;
-import lt.insoft.training.model.Folder;
-import lt.insoft.training.model.Folder_;
+import lt.insoft.training.model.Tag_;
+import lt.insoft.training.repositories.TagRepository;
 import lt.insoft.training.model.Tag;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +17,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
-public class TagRepImpl implements TagRepository{
+public class TagRepImpl implements TagRepository {
 
     @PersistenceContext
     private EntityManager manager;
@@ -32,12 +32,21 @@ public class TagRepImpl implements TagRepository{
         return tags;
     }
 
-    public boolean insertTag(Tag tag){
-        try{
-            manager.persist(tag);
-            return true;
-        }catch (PersistenceException pe){
-            return false;
-        }
+    @Transactional
+    public Tag insertTag(Tag tag) {
+        manager.persist(tag);
+        return tag;
     }
+
+    @Transactional
+    public List<Tag> findTag(String name) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteria = builder.createQuery(Tag.class);
+        Root<Tag> from = criteria.from(Tag.class);
+        criteria.select(from);
+        criteria.where(builder.equal(from.get(Tag_.name), name));
+        TypedQuery<Tag> typed = manager.createQuery(criteria);
+        return typed.getResultList();
+    }
+
 }

@@ -1,14 +1,13 @@
 package lt.insoft.training.services;
 
-import lt.insoft.training.Repositories.PictureDataRepository;
-import lt.insoft.training.Repositories.PictureRepository;
-import lt.insoft.training.Repositories.ThumbnailRepository;
+import lt.insoft.training.repositories.PictureRepository;
 import lt.insoft.training.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -18,13 +17,9 @@ import java.util.List;
 public class PictureService {
     @Autowired
     private PictureRepository pictureRep;
-    @Autowired
-    private PictureDataRepository pictureDataRep;
-    @Autowired
-    private ThumbnailRepository thumbnailRep;
+
     @Autowired
     private TagService tagService;
-    private List<Picture> pictures;
 
     public PictureService() {
     }
@@ -32,8 +27,8 @@ public class PictureService {
     @Transactional
     public long addPicture(Picture picture, PictureData pictureData, Thumbnail thumbnail, Folder folder, List<String> tagList) {
         List<Tag> tags = new ArrayList<Tag>();
-        for (String val : tagList) {
-            val = val.trim();
+        for (int i = 0; i < tagList.size(); i++) {
+            tagList.set(i, tagList.get(i).trim());
         }
         tagList = new ArrayList<String>(new LinkedHashSet<String>(tagList));
         for (String val : tagList) {
@@ -48,7 +43,6 @@ public class PictureService {
         picture.setFolder(folder);
         Date date = new Date();
         picture.setDate(date);
-        pictures.add(picture);
         return pictureRep.insertPicture(picture);
     }
 
@@ -58,7 +52,6 @@ public class PictureService {
             Picture picture = this.getPictureInfoById(id);
             picture.setTags(null);
             if (pictureRep.removePicture(picture.getId())) {
-                pictures.remove(picture);
                 return true;
             }
         } catch (NoResultException e) {
@@ -68,7 +61,7 @@ public class PictureService {
     }
 
     public List<Thumbnail> getPictureThumbnail(int from, int amount, Long folderId) {
-        pictures = pictureRep.getPictures(from, amount, folderId);
+        List<Picture> pictures = pictureRep.getPictures(from, amount, folderId);
         List<Thumbnail> thumbnails = new ArrayList<Thumbnail>();
         for (int i = 0; i < pictures.size(); i++) {
             thumbnails.add(pictures.get(i).getThumbnail());
@@ -77,40 +70,44 @@ public class PictureService {
     }
 
     public Picture getPictureInfoById(Long id) {
-        Picture picture = this.getPictureByThumbnail(id);
-        if (picture == null) {
-            try {
-                Picture pic = pictureRep.findPictureByThumbnailId(id);
-                return pic;
-            } catch (NoResultException e) {
-                throw e;
-            }
-        } else {
-            return picture;
+        try {
+            Picture pic = pictureRep.findPictureByThumbnailId(id);
+            return pic;
+        } catch (NoResultException e) {
+            throw e;
         }
-    }
-
-    private Picture getPictureByThumbnail(Long id) {
-        for (int i = 0; i < pictures.size(); i++) {
-            if (pictures.get(i).getThumbnail().getId().equals(id)) {
-                return pictures.get(i);
-            }
-        }
-        return null;
     }
 
     public List<Tag> getPictureTags(Long id) {
-        Picture picture = this.getPictureByThumbnail(id);
-        if (picture.getTags().size() == 0) {
-            return null;
-        } else {
-            List<Tag> tags = picture.getTags();
-            return tags;
-        }
+        Picture picture = pictureRep.findPictureByThumbnailId(id);
+        List<Tag> tags = picture.getTags();
+        return tags;
     }
 
     public int getPicturesCount(Long folderId) {
         return pictureRep.getPicturesCount(folderId);
+    }
+
+
+    public boolean updatePicture(Picture updatedPic, Long picId, List<String> tagList) {
+        List<Tag> tags = new ArrayList<Tag>();
+        for (int i = 0; i < tagList.size(); i++) {
+            tagList.set(i, tagList.get(i).trim());
+        }
+        tagList = new ArrayList<String>(new LinkedHashSet<String>(tagList));
+        for (String val : tagList) {
+            if (!val.isEmpty()) {
+                Tag tag = tagService.addTag(val);
+                tags.add(tag);
+            }
+        }
+        updatedPic.setTags(tags);
+        try {
+            pictureRep.updatePicture(updatedPic);
+        } catch (PersistenceException e) {
+            throw e;
+        }
+        return true;
     }
 
 }

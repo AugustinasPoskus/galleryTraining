@@ -16,9 +16,6 @@ public class Tag {
     @Column(name = "NAME", unique = true)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
-    private List<Picture> pictures;
-
     public Long getId() {
         return id;
     }
@@ -33,14 +30,6 @@ public class Tag {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Picture> getPictures() {
-        return pictures;
-    }
-
-    public void setPictures(List<Picture> pictures) {
-        this.pictures = pictures;
     }
 
     public Tag() {}

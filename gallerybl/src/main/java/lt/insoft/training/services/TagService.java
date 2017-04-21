@@ -1,7 +1,8 @@
 package lt.insoft.training.services;
 
-import lt.insoft.training.Repositories.TagRepository;
+import lt.insoft.training.repositories.TagRepository;
 import lt.insoft.training.model.Tag;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,37 +15,22 @@ public class TagService {
 
     @Autowired
     private TagRepository tagRep;
-    List<Tag> tags;
 
-    public TagService(){}
-
-    @PostConstruct
-    private void getAllTags(){
-        tags = tagRep.getAllTags();
+    public TagService() {
     }
 
     @Transactional
-    public synchronized Tag addTag(String name){
-        Tag tag = this.contains(name);
-        if(tag != null){
+    public Tag addTag(String name) {
+        List<Tag> tags;
+        Tag tag = new Tag();
+        tag.setName(name);
+        tags = tagRep.findTag(tag.getName());
+        if (tags.isEmpty()) {
+            tag = tagRep.insertTag(tag);
             return tag;
-        }else{
-            Tag newTag = new Tag();
-            newTag.setName(name);
-            if(tagRep.insertTag(newTag)){
-                tags.add(newTag);
-            }
-            return newTag;
+        } else {
+            return tags.get(0);
         }
-    }
-
-    public Tag contains(String name){
-        for (Tag tag:tags) {
-            if(tag.getName().equals(name)){
-                return tag;
-            }
-        }
-        return null;
     }
 
 }

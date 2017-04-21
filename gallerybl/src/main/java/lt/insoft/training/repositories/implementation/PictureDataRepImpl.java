@@ -1,13 +1,11 @@
-package lt.insoft.training.Repositories.implementation;
+package lt.insoft.training.repositories.implementation;
 
-import lt.insoft.training.Repositories.PictureDataRepository;
+import lt.insoft.training.repositories.PictureDataRepository;
 import lt.insoft.training.model.PictureData;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,13 +13,13 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
-public class PictureDataRepImpl implements PictureDataRepository{
+public class PictureDataRepImpl implements PictureDataRepository {
 
     @PersistenceContext
     private EntityManager manager;
 
     public List<PictureData> getPicturesThumbnails(int from, int amount) {
-        if((from >=0) && (amount > 0)) {
+        if ((from >= 0) && (amount > 0)) {
             CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
             CriteriaQuery<PictureData> criteriaQuery = criteriaBuilder.createQuery(PictureData.class);
             Root<PictureData> fromSql = criteriaQuery.from(PictureData.class);
@@ -43,13 +41,4 @@ public class PictureDataRepImpl implements PictureDataRepository{
         return manager.find(PictureData.class, id);
     }
 
-//    @Transactional
-//    public Long insertPictureData(PictureData pictureData) {
-//        try {
-//            manager.persist(pictureData);
-//            return pictureData.getId();
-//        } catch (PersistenceException pe) {
-//            return 0L;
-//        }
-//    }
 }

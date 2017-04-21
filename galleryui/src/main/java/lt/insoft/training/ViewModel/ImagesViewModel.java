@@ -1,6 +1,6 @@
 package lt.insoft.training.ViewModel;
 
-import Validators.NameValidator;
+import Validators.LengthValidator;
 import Validators.QualityValidator;
 import Validators.TagsValidator;
 import Validators.UploadValidator;
@@ -9,7 +9,7 @@ import lt.insoft.training.model.*;
 import lt.insoft.training.services.FolderService;
 import lt.insoft.training.services.PictureService;
 import org.apache.commons.io.IOUtils;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Execution;
@@ -17,15 +17,14 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zk.ui.util.Clients;
-import org.zkoss.zul.ListModelList;
 
 import javax.persistence.NoResultException;
+import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-@VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
 public class ImagesViewModel {
 
     @WireVariable
@@ -43,25 +42,26 @@ public class ImagesViewModel {
     private List<Thumbnail> pictureThumbnailList;
     private int picturesCount = 0;
     private int currentPage = 0;
-    private final int paginationBy = 8;
-    NameValidator pictureNameValidator = new NameValidator();
+    LengthValidator pictureNameValidator = new LengthValidator();
     QualityValidator qualityValidator = new QualityValidator();
     TagsValidator tagsValidator = new TagsValidator();
     UploadValidator uploadValidator = new UploadValidator();
+    private final int PAGINATION_BY = 8;
+    private final String MESSAGE = "Picture was already modified, please reload page and repeat your action!";
 
     @Init
     public void init(@ContextParam(ContextType.EXECUTION) Execution execution) {
         String parameter = execution.getParameter("folderId");
-        try{
+        try {
             Long folderId = Long.parseLong(parameter);
             folder = folderService.getFolder(folderId);
-            if(folder == null){
+            if (folder == null) {
                 Executions.sendRedirect("pageNotFound.zul");
-            } else{
+            } else {
                 picturesCount = pictureService.getPicturesCount(folder.getId());
-                pictureThumbnailList =  pictureService.getPictureThumbnail(0,paginationBy, folder.getId());
+                pictureThumbnailList = pictureService.getPictureThumbnail(0, PAGINATION_BY, folder.getId());
             }
-        }catch (NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             Executions.sendRedirect("pageNotFound.zul");
         }
     }
@@ -81,32 +81,33 @@ public class ImagesViewModel {
             byte[] bytes = IOUtils.toByteArray(is);
             return bytes;
         } catch (IOException e) {
-            Clients.evalJavaScript("modalWarning(" + e.getLocalizedMessage() + ");");
+            Clients.evalJavaScript("modalWarning('" + e.getLocalizedMessage() + "');");
         }
         return new byte[0];
     }
 
     @Command
-    @NotifyChange({"selectedPicture","tags"})
-    public void setImageInformation(@BindingParam("id") Long id){
+    @NotifyChange({"selectedPicture", "tags"})
+    public void setImageInformation(@BindingParam("id") Long id) {
         try {
+            selectedThumbnailId = id;
             selectedPicture = pictureService.getPictureInfoById(id);
             tags = "";
             List<Tag> list = selectedPicture.getTags();
-            for(int i=0;i<list.size();i++){
+            for (int i = 0; i < list.size(); i++) {
                 tags += list.get(i).getName();
-                if(i + 1 != list.size()){
+                if (i + 1 != list.size()) {
                     tags += ", ";
                 }
             }
-        }catch (NoResultException e){
-            Clients.evalJavaScript("modalWarning( '" + e.getLocalizedMessage() + "' );");
+        } catch (NoResultException e) {
+            Clients.evalJavaScript("modalWarning('" + MESSAGE + "');");
         }
     }
 
     @Command
     @NotifyChange("selectedPicture")
-    public void open(@BindingParam("id") Long id){
+    public void open(@BindingParam("id") Long id) {
         selectedPicture = pictureService.getPictureInfoById(id);
         Clients.evalJavaScript("openFullPicture();");
     }
@@ -114,9 +115,8 @@ public class ImagesViewModel {
     @Command
     @NotifyChange("fileName")
     public void doUploadFile(@BindingParam("file") Media image) {
-        if(!image.equals(null)) {
+        if (!image.equals(null)) {
             if (!image.getContentType().startsWith("image/")) {
-                //Messagebox.show("Not an image: " + image.getName(), "Error", Messagebox.OK, Messagebox.ERROR);
                 String message = "The request was rejected because the file (" + image.getName() + ") is not an image!";
                 Clients.evalJavaScript("modalWarning( '" + message + "' );");
                 return;
@@ -129,13 +129,13 @@ public class ImagesViewModel {
     }
 
     @Command
-    @NotifyChange({"pictureThumbnailList", "fileName", "picture", "tags", "picturesCount" })
-    public void add(){
+    @NotifyChange({"pictureThumbnailList", "fileName", "picture", "tags", "picturesCount"})
+    public void add() {
         Clients.evalJavaScript("dismissFormModal();");
-        if(pictureData.getData() != null && thumbnail.getData() != null ){
+        if (pictureData.getData() != null && thumbnail.getData() != null) {
             List<String> tagList = Arrays.asList(tags.split(","));
             pictureService.addPicture(picture, pictureData, thumbnail, folder, tagList);
-            if(pictureThumbnailList.size() < paginationBy){
+            if (pictureThumbnailList.size() < PAGINATION_BY) {
                 pictureThumbnailList.add(thumbnail);
             }
             picturesCount++;
@@ -144,36 +144,47 @@ public class ImagesViewModel {
         pictureData = new PictureData();
         thumbnail = new Thumbnail();
         tags = "";
-        this.fileName= "No picture uploaded!";
+        this.fileName = "No picture uploaded!";
     }
 
     @Command
     @NotifyChange({"pictureThumbnailList", "picturesCount"})
-    public void remove(@BindingParam("id") Long id){
-        try{
+    public void remove(@BindingParam("id") Long id) {
+        try {
             pictureService.removePictureByThumbnail(id);
             pictureThumbnailList.removeIf(p -> p.getId().equals(id));
             picturesCount--;
-            if(picturesCount > currentPage * paginationBy + pictureThumbnailList.size()){
-                pictureThumbnailList.add(pictureService.getPictureThumbnail(paginationBy - 1, 1, folder.getId()).get(0));
+            if (picturesCount > currentPage * PAGINATION_BY + pictureThumbnailList.size()) {
+                pictureThumbnailList.add(pictureService.getPictureThumbnail(PAGINATION_BY - 1, 1, folder.getId()).get(0));
             }
-        }catch(NoResultException e){
-            Clients.evalJavaScript("modalWarning( 'Picture was already modified, please reload page and repeat your action!' );");
+        } catch (NoResultException e) {
+            Clients.evalJavaScript("modalWarning('" + MESSAGE + "');");
         }
     }
 
     @Command
-    @NotifyChange({"fileName", "picture"})
-    public void undo(){
+    @NotifyChange({"fileName", "picture", "tags"})
+    public void undo() {
         picture = new Picture();
         pictureData = new PictureData();
         thumbnail = new Thumbnail();
-        this.fileName= "No picture uploaded!";
+        tags = "";
+        this.fileName = "No picture uploaded!";
     }
 
     @Command
-    public void update(){
-        System.out.println(selectedPicture.getName() + " " + selectedPicture.getDescription() + " " + this.tags);
+    @NotifyChange({"tags"})
+    public void update() {
+        List<String> tagList = Arrays.asList(tags.split(","));
+        tags = "";
+        try {
+            pictureService.updatePicture(selectedPicture, selectedThumbnailId, tagList);
+        } catch (OptimisticLockException optLocke) {
+            Clients.evalJavaScript("modalWarning('" + MESSAGE + "');");
+        } catch(JpaSystemException jpaE){
+            Clients.evalJavaScript("modalWarning('" + MESSAGE + "');");
+        }
+        Clients.evalJavaScript("dismissEdit();");
     }
 
     public List<Thumbnail> getPictureThumbnailList() {
@@ -218,8 +229,8 @@ public class ImagesViewModel {
         try {
             this.selectedPicture = pictureService.getPictureInfoById(selectedThumbnailId);
             Clients.evalJavaScript("confirmationModal();");
-        }catch (NoResultException e){
-            Clients.evalJavaScript("modalWarning( 'Picture was already modified, please reload page and repeat your action!' );");
+        } catch (NoResultException e) {
+            Clients.evalJavaScript("modalWarning('" + MESSAGE + "');");
         }
     }
 
@@ -255,22 +266,14 @@ public class ImagesViewModel {
         this.currentPage = currentPage;
     }
 
-    public int getPaginationBy() {
-        return paginationBy;
-    }
-
     @Command
-    @NotifyChange({"picturesCount","pictureThumbnailList"})
-    public void paging(){
+    @NotifyChange({"picturesCount", "pictureThumbnailList"})
+    public void paging() {
         picturesCount = pictureService.getPicturesCount(folder.getId());
-        pictureThumbnailList =  pictureService.getPictureThumbnail(currentPage * paginationBy, paginationBy, folder.getId());
+        pictureThumbnailList = pictureService.getPictureThumbnail(currentPage * PAGINATION_BY, PAGINATION_BY, folder.getId());
     }
 
-    public PictureService getPictureService() {
-        return pictureService;
-    }
-
-    public NameValidator getPictureNameValidator() {
+    public LengthValidator getPictureNameValidator() {
         return pictureNameValidator;
     }
 
@@ -286,5 +289,7 @@ public class ImagesViewModel {
         return uploadValidator;
     }
 
-
+    public int getPAGINATION_BY() {
+        return PAGINATION_BY;
+    }
 }

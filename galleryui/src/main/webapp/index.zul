@@ -11,7 +11,8 @@
     <style src="resources/css/pagination.css"/>
     <x:div apply="org.zkoss.bind.BindComposer"
            viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')"
-           validationMessages = "@id('vmsgs')">
+           validationMessages="@id('vmsgs')">
+        <include src="navigation.zul"/>
         <x:div class="page">
             <x:div class="buttonHolder">
                 <x:a class="btn icon-btn btn-success" data-toggle="modal" data-target="#addFolder">
@@ -33,7 +34,7 @@
                                     </x:i>
                                 </x:div>
                                 <x:div class="caption">
-                                    <label sclass="folderName" value="@bind(each.name)" />
+                                    <label sclass="folderName" value="@bind(each.name)"/>
                                 </x:div>
                                 <x:img alt="" class="img-responsive" src='resources/folder.png'
                                        onClick="@command('open', id=each.id)"/>
@@ -48,37 +49,41 @@
                 </x:div>
             </x:div>
             <paging onPaging="@command('paging')"
-                    totalSize="@bind(vm.foldersCount)" pageSize="@bind(vm.paginationBy)" activePage="@bind(vm.currentPage)" sclass="pagination2"/>
+                    totalSize="@bind(vm.foldersCount)" pageSize="@bind(vm.PAGINATION_BY)"
+                    activePage="@bind(vm.currentPage)" sclass="pagination2"/>
         </x:div>
-        <include src="modal.zul" />
+        <include src="modal.zul"/>
         <!--<x:div id="nameNotChanged" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" >-->
-            <!--<x:div class="modal-dialog">-->
-                <!--<x:div class="modal-content">-->
-                    <!--<x:div class="modal-header">-->
-                        <!--<x:button type="button" class="close" data-dismiss="modal">&#10006;</x:button>-->
-                        <!--<x:h4 class="modal-title">Warning!</x:h4>-->
-                    <!--</x:div>-->
-                    <!--<x:div class="modal-body">-->
-                        <!--<x:p id="message"/>-->
-                    <!--</x:div>-->
-                    <!--<x:div class="modal-footer">-->
-                        <!--<x:button type="button" class="btn btn-default" data-dismiss="modal">Close</x:button>-->
-                    <!--</x:div>-->
-                <!--</x:div>-->
-            <!--</x:div>-->
+        <!--<x:div class="modal-dialog">-->
+        <!--<x:div class="modal-content">-->
+        <!--<x:div class="modal-header">-->
+        <!--<x:button type="button" class="close" data-dismiss="modal">&#10006;</x:button>-->
+        <!--<x:h4 class="modal-title">Warning!</x:h4>-->
         <!--</x:div>-->
-        <x:div id="changeFolderNameModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" >
+        <!--<x:div class="modal-body">-->
+        <!--<x:p id="message"/>-->
+        <!--</x:div>-->
+        <!--<x:div class="modal-footer">-->
+        <!--<x:button type="button" class="btn btn-default" data-dismiss="modal">Close</x:button>-->
+        <!--</x:div>-->
+        <!--</x:div>-->
+        <!--</x:div>-->
+        <!--</x:div>-->
+        <x:div id="changeFolderNameModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
             <x:div class="modal-dialog">
                 <x:div class="modal-content">
                     <x:div class="modal-header">
-                        <x:button id="folderName" type="button" class="close" data-dismiss="modal" onClick="@command('undo')">&#10006;</x:button>
+                        <x:button id="folderName" type="button" class="close" data-dismiss="modal"
+                                  onClick="@command('undo')">&#10006;</x:button>
                         <x:h4 class="modal-title">Please enter new folder name:</x:h4>
                     </x:div>
                     <x:div class="modal-body">
                         <div form="@id('fx') @load(vm.folder) @save(vm.folder, before='editFolderName')">
                             <x:div class="form-group">
                                 <x:label for="nameField" class="form-control-label">Name:</x:label>
-                                <textbox id="nameField" value="@bind(fx.name) @validator(vm.folderNameValidator, maxLength=15, minLength=3)" tabindex="1" sclass="form-control"/>
+                                <textbox id="nameField"
+                                         value="@bind(fx.name) @validator(vm.folderNameValidator, maxLength=15, minLength=3, message='Your folder name should be between 3 and 15 characters!')"
+                                         tabindex="1" sclass="form-control"/>
                                 <label value="@bind(vmsgs[nameField])" sclass="error"/>
                             </x:div>
                         </div>
@@ -89,7 +94,7 @@
                 </x:div>
             </x:div>
         </x:div>
-        <x:div id="confirmationModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" >
+        <x:div id="confirmationModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
             <x:div class="modal-dialog">
                 <x:div class="modal-content">
                     <x:div class="modal-header">
@@ -123,16 +128,20 @@
                         <div form="@id('fol') @load(vm.folder) @save(vm.folder, before='add')">
                             <x:div class="form-group">
                                 <x:label class="form-control-label">Name:</x:label>
-                                <textbox id="newFolderName" value="@bind(fol.name) @validator(vm.folderNameValidator, maxLength=15, minLength=3)" tabindex="1" sclass="form-control"/>
+                                <textbox id="newFolderName"
+                                         value="@bind(fol.name) @validator(vm.folderNameValidator, maxLength=15, minLength=3, message='Your folder name should be between 3 and 15 characters!')"
+                                         tabindex="1" sclass="form-control"/>
                                 <label sclass="error" value="@load(vmsgs[newFolderName])"/>
                             </x:div>
                         </div>
                     </x:div>
                     <x:div class="modal-footer">
-                        <x:button type="Submit" class="btn btn-default" onClick="@command('add')" >
+                        <x:button type="Submit" class="btn btn-default" onClick="@command('add')">
                             Submit
                         </x:button>
-                        <x:button type="button" class="btn btn-default" data-dismiss="modal" onClick="@command('undo')">Cancel</x:button>
+                        <x:button type="button" class="btn btn-default" data-dismiss="modal" onClick="@command('undo')">
+                            Cancel
+                        </x:button>
                     </x:div>
                 </x:div>
             </x:div>
