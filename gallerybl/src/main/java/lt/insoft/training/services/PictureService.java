@@ -88,7 +88,6 @@ public class PictureService {
         return pictureRep.getPicturesCount(folderId);
     }
 
-
     public boolean updatePicture(Picture updatedPic, Long picId, List<String> tagList) {
         List<Tag> tags = new ArrayList<Tag>();
         for (int i = 0; i < tagList.size(); i++) {

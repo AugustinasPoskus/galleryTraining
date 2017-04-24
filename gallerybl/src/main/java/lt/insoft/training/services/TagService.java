@@ -33,4 +33,17 @@ public class TagService {
         }
     }
 
+    @Transactional
+    public Tag findTag(String name) {
+        List<Tag> tags;
+        Tag tag = new Tag();
+        tag.setName(name);
+        tags = tagRep.findTag(tag.getName());
+        if (tags.isEmpty()) {
+            return null;
+        } else {
+            return tags.get(0);
+        }
+    }
+
 }

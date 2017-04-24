@@ -2,8 +2,9 @@ package lt.insoft.training.model;
 
 
 import java.util.Date;
+import java.util.List;
 
-public class SearchObject {
+public class SearchPictureObject {
 
     private String pictureName;
 
@@ -14,6 +15,8 @@ public class SearchObject {
     private Date pictureInsertDate;
 
     private String sort;
+
+    private List<String> pictureTags;
 
     public String getPictureName() {
         return pictureName;
@@ -53,5 +56,13 @@ public class SearchObject {
 
     public void setSort(String sort) {
         this.sort = sort;
+    }
+
+    public List<String> getPictureTags() {
+        return pictureTags;
+    }
+
+    public void setPictureTags(List<String> pictureTags) {
+        this.pictureTags = pictureTags;
     }
 }

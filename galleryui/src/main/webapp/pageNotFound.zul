@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?init class="org.zkoss.zk.ui.util.Composition"arg0="template.zul"?>
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"/>
     <style src="resources/css/pageNotFound.css"/>
     <x:div class="container">
         <x:div class="row">

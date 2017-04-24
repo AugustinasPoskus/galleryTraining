@@ -1,0 +1,27 @@
+.panel-title > a:before {
+    font-family: FontAwesome;
+    content:"\f139";
+    padding-right: 5px;
+}
+.panel-title > a.collapsed:before {
+    content:"\f13a";
+}
+.panel-title > a:hover,
+.panel-title > a:active,
+.panel-title > a:focus  {
+    text-decoration:none;
+}
+
+label, label span{
+    cursor: default;
+}
+
+.form-group{
+    padding: 10px;
+}
+
+input[type=radio] {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+}

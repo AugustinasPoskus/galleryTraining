@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zk>
+    <desktop-config>
+        <theme-uri>resources/css/overrideZk.css</theme-uri>
+    </desktop-config>
+</zk>

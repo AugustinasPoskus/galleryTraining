@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zk xmlns:x="xhtml">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"/>
+    <x:link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+</zk>

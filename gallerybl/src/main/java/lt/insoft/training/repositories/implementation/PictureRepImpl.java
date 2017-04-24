@@ -1,14 +1,15 @@
 package lt.insoft.training.repositories.implementation;
 
-import lt.insoft.training.repositories.PictureRepository;
 import lt.insoft.training.model.*;
+import lt.insoft.training.repositories.PictureRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -92,17 +93,16 @@ public class PictureRepImpl implements PictureRepository {
         return (int) (long) manager.createQuery(c).getSingleResult();
     }
 
-    public List<Thumbnail> findPictureWithParameters(SearchObject so) {
+    public List<Thumbnail> findPictureWithParameters(SearchPictureObject so) {
         CriteriaBuilder cb = manager.getCriteriaBuilder();
         CriteriaQuery<Thumbnail> query = cb.createQuery(Thumbnail.class);
         Root<Picture> picture = query.from(Picture.class);
-        Join<Picture, Thumbnail> thumbs = picture.join("thumbnail");
+        Join<Picture, Thumbnail> thumbs = picture.join(Picture_.thumbnail);
         query.select(thumbs);
         if (so.getPictureName() != null) {
             query.where(cb.equal(picture.get(Picture_.name), so.getPictureName()));
         }
         if (so.getPictureInsertDate() != null) {
-            Date date;
             Date datePlusOne = new Date(so.getPictureInsertDate().getTime() + +TimeUnit.DAYS.toMillis(1));
             query.select(thumbs).where(cb.between(picture.get(Picture_.date), so.getPictureInsertDate(), datePlusOne));
         }
@@ -112,18 +112,32 @@ public class PictureRepImpl implements PictureRepository {
         if (so.getPictureQuality() != null) {
             query.where(cb.equal(picture.get(Picture_.quality), so.getPictureQuality()));
         }
-        if(so.getSort() != null) {
+        if (so.getPictureTags() != null) {
+            Join p = picture.join(Picture_.tags);
+            for (int i = 0; i < so.getPictureTags().size(); i++) {
+                query.where(cb.equal(p.get(Tag_.name), so.getPictureTags().get(i)));
+            }
+        }
+        if (so.getSort() != null) {
             if (so.getSort().equals("Ascending")) {
                 query.orderBy(cb.asc(picture.get(Picture_.date)));
             } else if (so.getSort().equals("Descending")) {
                 query.orderBy(cb.desc(picture.get(Picture_.date)));
             }
         }
-//        if (so.getSearchBy().equals(SearchBy.TAGS)){
-//            query.select(thumbs).where(cb.equal(picture.get(Picture_.tags), so.getEnteredText()));
-//        }
         TypedQuery<Thumbnail> typedQuery = manager.createQuery(query);
         List<Thumbnail> thumbnails = typedQuery.getResultList();
         return thumbnails;
+    }
+
+    public List<Picture> findPictureWithTags(SearchPictureObject so) {
+        CriteriaBuilder cb = manager.getCriteriaBuilder();
+        CriteriaQuery<Picture> query = cb.createQuery(Picture.class);
+        Root<Picture> picture = query.from(Picture.class);
+        Join p = picture.join(Picture_.tags);
+        query.where(cb.equal(p.get(Tag_.name), so.getPictureTags().get(0)));
+        TypedQuery<Picture> typedQuery = manager.createQuery(query);
+        List<Picture> pictures = typedQuery.getResultList();
+        return pictures;
     }
 }
