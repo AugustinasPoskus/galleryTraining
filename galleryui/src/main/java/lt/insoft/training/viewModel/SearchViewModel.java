@@ -1,18 +1,20 @@
-package lt.insoft.training.ViewModel;
+package lt.insoft.training.viewModel;
 
 
+import lt.insoft.training.model.Picture;
 import lt.insoft.training.model.SearchPictureObject;
 import lt.insoft.training.model.Thumbnail;
+import lt.insoft.training.myComponents.CustomModal;
+import lt.insoft.training.services.PictureService;
 import lt.insoft.training.services.SearchService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.Radiogroup;
-import org.zkoss.zul.Window;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +29,7 @@ public class SearchViewModel extends SelectorComposer<Component> {
     @Wire("#rg")
     private Radiogroup radiogroup;
     private String tags = "";
+    private Picture selectedPicture;
 
     @Init
     public void init() {
@@ -39,14 +42,15 @@ public class SearchViewModel extends SelectorComposer<Component> {
     }
 
     @Command
+    @NotifyChange({"data", "selectedPicture"})
     public void open(@BindingParam("id") Long id) {
+        selectedPicture = searchService.findFullPicture(id);
     }
 
     @Command
     @NotifyChange({"thumbnails", "searchObject", "tags"})
     public void search() {
         if (!tags.isEmpty()) {
-            System.out.println(tags);
             List<String> tagList = Arrays.asList(tags.split(","));
             searchObject.setPictureTags(tagList);
             tags = "";
@@ -75,4 +79,13 @@ public class SearchViewModel extends SelectorComposer<Component> {
     public void setTags(String tags) {
         this.tags = tags;
     }
+
+    public Picture getSelectedPicture() {
+        return selectedPicture;
+    }
+
+    public void setSelectedPicture(Picture selectedPicture) {
+        this.selectedPicture = selectedPicture;
+    }
+
 }

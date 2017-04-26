@@ -1,5 +1,6 @@
 package lt.insoft.training.services;
 
+import lt.insoft.training.model.Picture;
 import lt.insoft.training.model.SearchPictureObject;
 import lt.insoft.training.model.Tag;
 import lt.insoft.training.model.Thumbnail;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -32,5 +34,15 @@ public class SearchService {
         }
         so.setPictureTags(tagList);
         return pictureRep.findPictureWithParameters(so);
+    }
+
+    @Transactional
+    public Picture findFullPicture(Long id){
+        try {
+            Picture pic = pictureRep.findPictureByThumbnailId(id);
+            return pic;
+        } catch (NoResultException e) {
+            throw e;
+        }
     }
 }

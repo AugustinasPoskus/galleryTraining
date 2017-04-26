@@ -1,0 +1,10 @@
+<language-addon>
+    <addon-name>customModal</addon-name>
+    <language-name>xul/html</language-name>
+
+    <component>
+        <component-name>customModal</component-name>
+        <component-class>lt.insoft.training.myComponents.CustomModal</component-class>
+        <widget-class>lt.insoft.training.myComponents.CustomModal</widget-class>
+    </component>
+</language-addon>

@@ -1,10 +1,10 @@
-package lt.insoft.training.ViewModel;
+package lt.insoft.training.viewModel;
 
-import Validators.LengthValidator;
-import Validators.QualityValidator;
-import Validators.TagsValidator;
-import Validators.UploadValidator;
-import lt.insoft.training.ViewModel.Utils.ImageScale;
+import lt.insoft.training.validators.LengthValidator;
+import lt.insoft.training.validators.QualityValidator;
+import lt.insoft.training.validators.TagsValidator;
+import lt.insoft.training.validators.UploadValidator;
+import lt.insoft.training.viewModel.utils.ImageScale;
 import lt.insoft.training.model.*;
 import lt.insoft.training.services.FolderService;
 import lt.insoft.training.services.PictureService;
@@ -14,7 +14,6 @@ import org.zkoss.bind.annotation.*;
 import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zk.ui.util.Clients;
 

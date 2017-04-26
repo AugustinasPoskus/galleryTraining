@@ -7,7 +7,7 @@
     <style src="resources/css/index.css"/>
     <style src="resources/css/pagination.css"/>
     <x:div apply="org.zkoss.bind.BindComposer"
-           viewModel="@id('vm') @init('lt.insoft.training.ViewModel.GalleryViewModel')"
+           viewModel="@id('vm') @init('lt.insoft.training.viewModel.GalleryViewModel')"
            validationMessages="@id('vmsgs')">
         <include src="navigation.zul"/>
         <x:div class="page">

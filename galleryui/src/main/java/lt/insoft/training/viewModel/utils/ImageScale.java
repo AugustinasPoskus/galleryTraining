@@ -1,4 +1,4 @@
-package lt.insoft.training.ViewModel.Utils;
+package lt.insoft.training.viewModel.utils;
 
 import org.imgscalr.Scalr;
 

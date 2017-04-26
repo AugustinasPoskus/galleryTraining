@@ -25,3 +25,7 @@ input[type=radio] {
     height: 15px;
     margin: 0;
 }
+
+.enlargeImageModalSource{
+    width: 100%;
+}

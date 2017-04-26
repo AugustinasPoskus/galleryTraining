@@ -1,4 +1,4 @@
-package Validators;
+package lt.insoft.training.validators;
 
 import org.zkoss.bind.Property;
 import org.zkoss.bind.ValidationContext;

@@ -1,4 +1,4 @@
-package Validators;
+package lt.insoft.training.validators;
 
 import lt.insoft.training.model.PictureData;
 import org.zkoss.bind.ValidationContext;

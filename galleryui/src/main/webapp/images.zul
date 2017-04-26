@@ -7,7 +7,7 @@
     <style src="resources/css/images.css"/>
     <style src="resources/css/pagination.css"/>
     <x:div apply="org.zkoss.bind.BindComposer"
-           viewModel="@id('vm') @init('lt.insoft.training.ViewModel.ImagesViewModel')"
+           viewModel="@id('vm') @init('lt.insoft.training.viewModel.ImagesViewModel')"
            validationMessages="@id('vmsgs')">
         <include src="navigation.zul"/>
         <x:div class="container">
@@ -24,7 +24,7 @@
                     <template name="children">
                         <x:div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
                             <x:div class="col-lg-12 picture text-center">
-                                <image content="@load(each.data) @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')"
+                                <image content="@load(each.data) @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"
                                        onClick="@command('open', id=each.id)" sclass="imageBorder"/>
                                 <x:div class="buttons">
                                     <x:i class="material-icons" data-toggle="modal" data-target="#showInfo"
@@ -238,7 +238,7 @@
                         </x:div>
                         <x:div class="modal-body">
                             <image id="image-gallery-image" sclass="enlargeImageModalSource"
-                                content="@load(vm.selectedPicture.pictureData.data, after='open') @converter('lt.insoft.training.ViewModel.Utils.ImageToZkImageConverter')"/>
+                                content="@load(vm.selectedPicture.pictureData.data, after='open') @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"/>
                         </x:div>
                     </x:div>
                 </x:div>

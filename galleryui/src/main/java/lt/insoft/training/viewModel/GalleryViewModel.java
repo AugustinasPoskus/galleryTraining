@@ -1,8 +1,9 @@
-package lt.insoft.training.ViewModel;
+package lt.insoft.training.viewModel;
 
-import Validators.LengthValidator;
+import lt.insoft.training.validators.LengthValidator;
 import lt.insoft.training.model.Folder;
 import lt.insoft.training.services.FolderService;
+import lt.insoft.training.viewModel.utils.ImageToZkImageConverter;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.zkoss.bind.annotation.*;
