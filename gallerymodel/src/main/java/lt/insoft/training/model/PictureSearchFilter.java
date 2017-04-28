@@ -4,7 +4,7 @@ package lt.insoft.training.model;
 import java.util.Date;
 import java.util.List;
 
-public class SearchPictureObject {
+public class PictureSearchFilter {
 
     private String pictureName;
 

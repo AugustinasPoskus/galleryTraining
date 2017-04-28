@@ -2,17 +2,13 @@ package lt.insoft.training.viewModel;
 
 
 import lt.insoft.training.model.Picture;
-import lt.insoft.training.model.SearchPictureObject;
+import lt.insoft.training.model.PictureSearchFilter;
 import lt.insoft.training.model.Thumbnail;
-import lt.insoft.training.myComponents.CustomModal;
-import lt.insoft.training.services.PictureService;
 import lt.insoft.training.services.SearchService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
-import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.Radiogroup;
@@ -25,12 +21,16 @@ public class SearchViewModel extends SelectorComposer<Component> {
 
     @WireVariable
     private SearchService searchService;
-    private SearchPictureObject searchObject = new SearchPictureObject();
+    private PictureSearchFilter searchObject = new PictureSearchFilter();
+    private PictureSearchFilter lastSearchedFields;
     private List<Thumbnail> thumbnails;
     @Wire("#rg")
     private Radiogroup radiogroup;
     private String tags = "";
     private Picture selectedPicture;
+    private final int PAGINATION_BY = 8;
+    private int picturesCount = 0;
+    private int currentPage = 0;
 
     @Init
     public void init() {
@@ -49,23 +49,25 @@ public class SearchViewModel extends SelectorComposer<Component> {
     }
 
     @Command
-    @NotifyChange({"thumbnails", "searchObject", "tags"})
+    @NotifyChange({"thumbnails", "searchObject", "tags", "picturesCount"})
     public void search() {
         if (!tags.isEmpty()) {
             List<String> tagList = Arrays.asList(tags.split(","));
             searchObject.setPictureTags(tagList);
             tags = "";
         }
-        thumbnails = searchService.searchThumbnails(searchObject);
-        searchObject = new SearchPictureObject();
+        picturesCount = searchService.getSearchPicturesCount(searchObject);
+        thumbnails = searchService.searchThumbnails(currentPage * PAGINATION_BY, PAGINATION_BY, searchObject);
+        lastSearchedFields = searchObject;
+        searchObject = new PictureSearchFilter();
         radiogroup.setSelectedIndex(2);
     }
 
-    public SearchPictureObject getSearchObject() {
+    public PictureSearchFilter getSearchObject() {
         return searchObject;
     }
 
-    public void setSearchObject(SearchPictureObject searchObject) {
+    public void setSearchObject(PictureSearchFilter searchObject) {
         this.searchObject = searchObject;
     }
 
@@ -89,4 +91,26 @@ public class SearchViewModel extends SelectorComposer<Component> {
         this.selectedPicture = selectedPicture;
     }
 
+    @Command
+    @NotifyChange({"picturesCount", "thumbnails"})
+    public void paging() {
+        picturesCount = searchService.getSearchPicturesCount(lastSearchedFields);
+        thumbnails = searchService.searchThumbnails(currentPage * PAGINATION_BY, PAGINATION_BY, lastSearchedFields);
+    }
+
+    public int getPAGINATION_BY() {
+        return PAGINATION_BY;
+    }
+
+    public int getPicturesCount() {
+        return picturesCount;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
 }

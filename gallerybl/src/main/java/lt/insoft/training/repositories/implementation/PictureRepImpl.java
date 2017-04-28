@@ -93,7 +93,7 @@ public class PictureRepImpl implements PictureRepository {
         return (int) (long) manager.createQuery(c).getSingleResult();
     }
 
-    public List<Thumbnail> findPictureWithParameters(SearchPictureObject so) {
+    public List<Thumbnail> findPictureWithParameters(int from, int amount, PictureSearchFilter so) {
         CriteriaBuilder cb = manager.getCriteriaBuilder();
         CriteriaQuery<Thumbnail> query = cb.createQuery(Thumbnail.class);
         Root<Picture> picture = query.from(Picture.class);
@@ -126,11 +126,13 @@ public class PictureRepImpl implements PictureRepository {
             }
         }
         TypedQuery<Thumbnail> typedQuery = manager.createQuery(query);
+        typedQuery.setFirstResult(from);
+        typedQuery.setMaxResults(amount);
         List<Thumbnail> thumbnails = typedQuery.getResultList();
         return thumbnails;
     }
 
-    public List<Picture> findPictureWithTags(SearchPictureObject so) {
+    public List<Picture> findPictureWithTags(PictureSearchFilter so) {
         CriteriaBuilder cb = manager.getCriteriaBuilder();
         CriteriaQuery<Picture> query = cb.createQuery(Picture.class);
         Root<Picture> picture = query.from(Picture.class);
@@ -139,5 +141,40 @@ public class PictureRepImpl implements PictureRepository {
         TypedQuery<Picture> typedQuery = manager.createQuery(query);
         List<Picture> pictures = typedQuery.getResultList();
         return pictures;
+    }
+
+    public int getSearchPicturesCount(PictureSearchFilter so) {
+        CriteriaBuilder cb = manager.getCriteriaBuilder();
+        CriteriaQuery<Long> c = cb.createQuery(Long.class);
+        Root<Picture> picture = c.from(Picture.class);
+        Join<Picture, Thumbnail> thumbs = picture.join(Picture_.thumbnail);
+        c.select(cb.count(picture));
+        if (so.getPictureName() != null) {
+            c.where(cb.equal(picture.get(Picture_.name), so.getPictureName()));
+        }
+        if (so.getPictureInsertDate() != null) {
+            Date datePlusOne = new Date(so.getPictureInsertDate().getTime() + +TimeUnit.DAYS.toMillis(1));
+            c.where(cb.between(picture.get(Picture_.date), so.getPictureInsertDate(), datePlusOne));
+        }
+        if (so.getPictureDescription() != null) {
+            c.where(cb.equal(picture.get(Picture_.description), so.getPictureDescription()));
+        }
+        if (so.getPictureQuality() != null) {
+            c.where(cb.equal(picture.get(Picture_.quality), so.getPictureQuality()));
+        }
+        if (so.getPictureTags() != null) {
+            Join p = picture.join(Picture_.tags);
+            for (int i = 0; i < so.getPictureTags().size(); i++) {
+                c.where(cb.equal(p.get(Tag_.name), so.getPictureTags().get(i)));
+            }
+        }
+        if (so.getSort() != null) {
+            if (so.getSort().equals("Ascending")) {
+                c.orderBy(cb.asc(picture.get(Picture_.date)));
+            } else if (so.getSort().equals("Descending")) {
+                c.orderBy(cb.desc(picture.get(Picture_.date)));
+            }
+        }
+        return (int) (long) manager.createQuery(c).getSingleResult();
     }
 }

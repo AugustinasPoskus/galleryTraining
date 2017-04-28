@@ -1,11 +1,9 @@
 package lt.insoft.training.services;
 
 import lt.insoft.training.model.Picture;
-import lt.insoft.training.model.SearchPictureObject;
-import lt.insoft.training.model.Tag;
+import lt.insoft.training.model.PictureSearchFilter;
 import lt.insoft.training.model.Thumbnail;
 import lt.insoft.training.repositories.PictureRepository;
-import lt.insoft.training.repositories.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +22,7 @@ public class SearchService {
     private TagService TagService;
 
     @Transactional
-    public List<Thumbnail> searchThumbnails(SearchPictureObject so) {
+    public List<Thumbnail> searchThumbnails(int from, int amount, PictureSearchFilter so) {
         List<String> tagList = so.getPictureTags();
         if(tagList != null){
             for (int i = 0; i < tagList.size(); i++) {
@@ -33,7 +31,7 @@ public class SearchService {
             tagList = new ArrayList<String>(new LinkedHashSet<String>(tagList));
         }
         so.setPictureTags(tagList);
-        return pictureRep.findPictureWithParameters(so);
+        return pictureRep.findPictureWithParameters(from, amount, so);
     }
 
     @Transactional
@@ -44,5 +42,10 @@ public class SearchService {
         } catch (NoResultException e) {
             throw e;
         }
+    }
+
+    @Transactional
+    public int getSearchPicturesCount(PictureSearchFilter so) {
+        return pictureRep.getSearchPicturesCount(so);
     }
 }

@@ -31,12 +31,12 @@
                         <x:div class="panel-heading" role="tab" id="headingTwo">
                             <x:h4 class="panel-title">
                                 <x:a class="collapsed" data-toggle="collapse" data-parent="#accordion"
-                                     href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                     href="#additionalFields" aria-expanded="false" aria-controls="additionalFields">
                                     Advanced search
                                 </x:a>
                             </x:h4>
                         </x:div>
-                        <x:div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
+                        <x:div id="additionalFields" class="panel-collapse collapse" role="tabpanel"
                                aria-labelledby="headingTwo">
                             <x:div class="form-group date">
                                 <vlayout>
@@ -80,6 +80,10 @@
                     </x:div>
                 </template>
             </x:div>
+            <paging onPaging="@command('paging')"
+                    totalSize="@bind(vm.picturesCount)" pageSize="@bind(vm.PAGINATION_BY)"
+                    activePage="@bind(vm.currentPage)" sclass="pagination2"
+                    visible="@bind(not empty vm.thumbnails)"/>
             <customModal title="@load(vm.selectedPicture.name, after='open')" type="picture" >
                 <x:div class="modal-body">
                     <image id="image-gallery-image" sclass="enlargeImageModalSource"
