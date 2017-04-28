@@ -73,14 +73,14 @@
             <x:div class=" col-lg-12 row" children="@bind(vm.thumbnails)">
                 <template name="children">
                     <x:div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                        <x:div class="col-lg-12 picture text-center" data-target="#confirmationModal">
+                        <x:div class="col-lg-12 picture text-center">
                             <image content="@load(each.data) @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"
                                    sclass="imageBorder" onClick="@command('open', id=each.id)"/>
                         </x:div>
                     </x:div>
                 </template>
             </x:div>
-            <customModal id="customModal" title="@load(vm.selectedPicture.name, after='open')" type="picture">
+            <customModal title="@load(vm.selectedPicture.name, after='open')" type="picture" >
                 <x:div class="modal-body">
                     <image id="image-gallery-image" sclass="enlargeImageModalSource"
                            content="@load(vm.selectedPicture.pictureData.data, after='open') @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"/>

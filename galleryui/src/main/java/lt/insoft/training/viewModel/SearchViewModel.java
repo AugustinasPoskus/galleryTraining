@@ -12,6 +12,7 @@ import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
+import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.Radiogroup;
@@ -42,7 +43,7 @@ public class SearchViewModel extends SelectorComposer<Component> {
     }
 
     @Command
-    @NotifyChange({"data", "selectedPicture"})
+    @NotifyChange("selectedPicture")
     public void open(@BindingParam("id") Long id) {
         selectedPicture = searchService.findFullPicture(id);
     }

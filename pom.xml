@@ -23,10 +23,31 @@
         <oracle.jdbc.version>11.2.0.3</oracle.jdbc.version>
         <lombok.version>1.16.14</lombok.version>
         <spring.version>4.3.7.RELEASE</spring.version>
+        <springsecurity.version>4.2.2.RELEASE</springsecurity.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Spring Security -->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
+                <version>${springsecurity.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${springsecurity.version}</version>
+            </dependency>
+
+            <!-- extra -->
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+
             <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
