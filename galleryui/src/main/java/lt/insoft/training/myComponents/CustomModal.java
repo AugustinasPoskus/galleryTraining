@@ -1,5 +1,6 @@
 package lt.insoft.training.myComponents;
 
+import org.zkoss.zk.au.AuRequest;
 import org.zkoss.zk.ui.select.annotation.Listen;
 
 import java.awt.*;
@@ -8,7 +9,7 @@ public class CustomModal extends org.zkoss.zk.ui.HtmlBasedComponent {
     private String title = "";
     private String type = "";
     private boolean show = false;
-
+    private boolean onClose = false;
 
     public void setTitle(String title) {
         title = title;
@@ -38,6 +39,10 @@ public class CustomModal extends org.zkoss.zk.ui.HtmlBasedComponent {
         smartUpdate("show", show);
     }
 
+    public boolean isOnClose() {
+        return onClose;
+    }
+
     protected void renderProperties(org.zkoss.zk.ui.sys.ContentRenderer renderer) throws java.io.IOException {
         super.renderProperties(renderer);
         render(renderer, "title", title);
@@ -45,8 +50,13 @@ public class CustomModal extends org.zkoss.zk.ui.HtmlBasedComponent {
         render(renderer, "show", show);
     }
 
-    public void onClick(Event e) throws InterruptedException{
-        System.out.println("A");
+    public void service(AuRequest request, boolean everError) {
+        String cmd = request.getCommand();
+        if (cmd.equals("onClick")) {
+            this.setShow(false);
+        } else {
+            super.service(request, everError);
+        }
     }
-
 }
+

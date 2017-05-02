@@ -51,16 +51,21 @@ public class SearchViewModel extends SelectorComposer<Component> {
     @Command
     @NotifyChange({"thumbnails", "searchObject", "tags", "picturesCount"})
     public void search() {
-        if (!tags.isEmpty()) {
-            List<String> tagList = Arrays.asList(tags.split(","));
-            searchObject.setPictureTags(tagList);
-            tags = "";
+        List<String> tagList;
+        if(tags.isEmpty()){
+            tagList = null;
+        }else {
+            tagList = Arrays.asList(tags.split(", "));
         }
+        searchObject.setPictureTags(tagList);
         picturesCount = searchService.getSearchPicturesCount(searchObject);
-        thumbnails = searchService.searchThumbnails(currentPage * PAGINATION_BY, PAGINATION_BY, searchObject);
+        if(picturesCount != 0){
+            thumbnails = searchService.searchThumbnails(currentPage * PAGINATION_BY, PAGINATION_BY, searchObject);
+        }else{
+            thumbnails.clear();
+        }
         lastSearchedFields = searchObject;
-        searchObject = new PictureSearchFilter();
-        radiogroup.setSelectedIndex(2);
+        radiogroup.setSelectedIndex(radiogroup.getSelectedIndex());
     }
 
     public PictureSearchFilter getSearchObject() {

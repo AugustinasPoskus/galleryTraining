@@ -10,11 +10,11 @@ import java.util.Map;
 public class LengthValidator extends AbstractValidator {
 
     public void validate(ValidationContext ctx) {
-        Number maxLength = (Number) ctx.getBindContext().getValidatorArg("maxLength");
-        Number minLength = (Number) ctx.getBindContext().getValidatorArg("minLength");
+        Long maxLength = (Long) ctx.getBindContext().getValidatorArg("maxLength");
+        Long minLength = (Long) ctx.getBindContext().getValidatorArg("minLength");
         String message = (String) ctx.getBindContext().getValidatorArg("message");
         String value = (String) ctx.getProperty().getValue();
-        if (value.length() > maxLength.longValue() || value.length() < minLength.longValue()) {
+        if (value.length() > maxLength || value.length() < minLength) {
             addInvalidMessage(ctx, message);
         }
     }

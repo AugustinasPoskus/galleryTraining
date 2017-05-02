@@ -2,6 +2,7 @@ package lt.insoft.training.services;
 
 import lt.insoft.training.model.Picture;
 import lt.insoft.training.model.PictureSearchFilter;
+import lt.insoft.training.model.Tag;
 import lt.insoft.training.model.Thumbnail;
 import lt.insoft.training.repositories.PictureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +20,24 @@ public class SearchService {
     private PictureRepository pictureRep;
 
     @Autowired
-    private TagService TagService;
+    private TagService tagService;
 
     @Transactional
     public List<Thumbnail> searchThumbnails(int from, int amount, PictureSearchFilter so) {
         List<String> tagList = so.getPictureTags();
+        List<Tag> tags = new ArrayList<>();
         if(tagList != null){
-            for (int i = 0; i < tagList.size(); i++) {
-                tagList.set(i, tagList.get(i).trim());
-            }
+            try{
             tagList = new ArrayList<String>(new LinkedHashSet<String>(tagList));
+            for(String tagName:tagList ){
+                Tag tag = tagService.findTag(tagName);
+                tags.add(tag);
+            }
+            } catch (Exception e){
+                return new ArrayList<>();
+            }
         }
-        so.setPictureTags(tagList);
-        return pictureRep.findPictureWithParameters(from, amount, so);
+        return pictureRep.findPictureWithParameters(from, amount, so, tags);
     }
 
     @Transactional
@@ -46,6 +52,24 @@ public class SearchService {
 
     @Transactional
     public int getSearchPicturesCount(PictureSearchFilter so) {
-        return pictureRep.getSearchPicturesCount(so);
+        List<String> tagList = so.getPictureTags();
+        List<Tag> tags = new ArrayList<>();
+        if(tagList != null){
+            for (int i = 0; i < tagList.size(); i++) {
+                tagList.set(i, tagList.get(i).trim());
+
+            }
+            tagList = new ArrayList<String>(new LinkedHashSet<String>(tagList));
+            for(String tagName:tagList ){
+                Tag tag = tagService.findTag(tagName);
+                if(tag != null){
+                    tags.add(tag);
+                }
+            }
+            if(tags.size() == 0){
+                return 0;
+            }
+        }
+        return pictureRep.getSearchPicturesCount(so, tags);
     }
 }

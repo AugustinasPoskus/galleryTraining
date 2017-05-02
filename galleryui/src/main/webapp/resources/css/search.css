@@ -37,3 +37,6 @@ input[type=radio] {
     text-align: center;
     font-weight: 500;
 }
+.body{
+    overflow-y:auto;
+}

@@ -9,6 +9,8 @@ lt.insoft.training.myComponents.CustomModal = zk.$extends(zk.Widget, {
         if(show){
             var uuid = this.uuid;
             $(this.$n()).modal('show');
+        }else if (!show && this.desktop){
+            $(this.$n()).modal('hide');
         }
     },
 
@@ -42,26 +44,35 @@ lt.insoft.training.myComponents.CustomModal = zk.$extends(zk.Widget, {
                     '<h4 class="gallery-title" id="', uuid, '-title">', this._title, '</h4>',
                 '</div>');
                     for (var w = this.firstChild; w; w = w.nextSibling){
+                        console.log(w);
                         w.redraw(out);
                     }
+        if (this._type === 'form') {
+
+        }
         out.push('</div>',
-                    '</div>',
-                '</div>'
+                '</div>',
+            '</div>'
         );
     },
 
+//    _doSubmit: function(evt){
+//        alert("submit");
+//    },
+
     _doClose: function(evt) {
-        $(this.$n()).modal('hide');
-        this.fire("onClick");
+        this.fire("onClick",{}, {toServer:true});
     },
 
     bind_: function(evt) {
         this.$supers('bind_', arguments);
         this.domListen_(this.$n('close'), 'onClick', '_doClose');
+        //this.domListen_(this.$n('submit'), 'onClick', '_doSubmit');
     },
 
     unbind_: function(evt) {
         this.domUnlisten_(this.$n('close'), 'onClick', '_doClose');
+        //this.domUnlisten_(this.$n('submit'), 'onClick', '_doSubmit');
         this.$supers('unbind_', arguments);
     }
 

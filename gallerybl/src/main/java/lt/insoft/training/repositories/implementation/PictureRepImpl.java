@@ -10,6 +10,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -93,29 +94,29 @@ public class PictureRepImpl implements PictureRepository {
         return (int) (long) manager.createQuery(c).getSingleResult();
     }
 
-    public List<Thumbnail> findPictureWithParameters(int from, int amount, PictureSearchFilter so) {
+    public List<Thumbnail> findPictureWithParameters(int from, int amount, PictureSearchFilter so, List<Tag> tags) {
         CriteriaBuilder cb = manager.getCriteriaBuilder();
         CriteriaQuery<Thumbnail> query = cb.createQuery(Thumbnail.class);
         Root<Picture> picture = query.from(Picture.class);
         Join<Picture, Thumbnail> thumbs = picture.join(Picture_.thumbnail);
         query.select(thumbs);
-        if (so.getPictureName() != null) {
-            query.where(cb.equal(picture.get(Picture_.name), so.getPictureName()));
+        List<Predicate> predicates = new ArrayList<Predicate>();
+        if (so.getPictureName() != null && !so.getPictureName().equals("")) {
+            predicates.add(cb.and(cb.equal(picture.get(Picture_.name), so.getPictureName())));
         }
-        if (so.getPictureInsertDate() != null) {
+        if (so.getPictureInsertDate() != null && !so.getPictureInsertDate().equals("")) {
             Date datePlusOne = new Date(so.getPictureInsertDate().getTime() + +TimeUnit.DAYS.toMillis(1));
-            query.select(thumbs).where(cb.between(picture.get(Picture_.date), so.getPictureInsertDate(), datePlusOne));
+            predicates.add(cb.and(cb.between(picture.get(Picture_.date), so.getPictureInsertDate(), datePlusOne)));
         }
-        if (so.getPictureDescription() != null) {
-            query.where(cb.equal(picture.get(Picture_.description), so.getPictureDescription()));
+        if (so.getPictureDescription() != null && !so.getPictureDescription().equals("")) {
+            predicates.add(cb.and(cb.equal(picture.get(Picture_.description), so.getPictureDescription())));
         }
-        if (so.getPictureQuality() != null) {
-            query.where(cb.equal(picture.get(Picture_.quality), so.getPictureQuality()));
+        if (so.getPictureQuality() != null && !so.getPictureQuality().equals("")) {
+            predicates.add(cb.and(cb.equal(picture.get(Picture_.quality), so.getPictureQuality())));
         }
-        if (so.getPictureTags() != null) {
-            Join p = picture.join(Picture_.tags);
-            for (int i = 0; i < so.getPictureTags().size(); i++) {
-                query.where(cb.equal(p.get(Tag_.name), so.getPictureTags().get(i)));
+        if (tags != null) {
+            for (int i = 0; i < tags.size(); i++) {
+                predicates.add(cb.isMember(tags.get(i), picture.get(Picture_.tags)));
             }
         }
         if (so.getSort() != null) {
@@ -125,6 +126,8 @@ public class PictureRepImpl implements PictureRepository {
                 query.orderBy(cb.desc(picture.get(Picture_.date)));
             }
         }
+        query.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
+
         TypedQuery<Thumbnail> typedQuery = manager.createQuery(query);
         typedQuery.setFirstResult(from);
         typedQuery.setMaxResults(amount);
@@ -143,38 +146,33 @@ public class PictureRepImpl implements PictureRepository {
         return pictures;
     }
 
-    public int getSearchPicturesCount(PictureSearchFilter so) {
+    public int getSearchPicturesCount(PictureSearchFilter so, List<Tag> tags) {
         CriteriaBuilder cb = manager.getCriteriaBuilder();
         CriteriaQuery<Long> c = cb.createQuery(Long.class);
         Root<Picture> picture = c.from(Picture.class);
         Join<Picture, Thumbnail> thumbs = picture.join(Picture_.thumbnail);
         c.select(cb.count(picture));
-        if (so.getPictureName() != null) {
-            c.where(cb.equal(picture.get(Picture_.name), so.getPictureName()));
+        List<Predicate> predicates = new ArrayList<Predicate>();
+        if (so.getPictureName() != null && !so.getPictureName().equals("")) {
+            predicates.add(cb.and(cb.equal(picture.get(Picture_.name), so.getPictureName())));
         }
-        if (so.getPictureInsertDate() != null) {
+        if (so.getPictureInsertDate() != null && !so.getPictureInsertDate().equals("")) {
             Date datePlusOne = new Date(so.getPictureInsertDate().getTime() + +TimeUnit.DAYS.toMillis(1));
-            c.where(cb.between(picture.get(Picture_.date), so.getPictureInsertDate(), datePlusOne));
+            predicates.add(cb.and(cb.between(picture.get(Picture_.date), so.getPictureInsertDate(), datePlusOne)));
         }
-        if (so.getPictureDescription() != null) {
-            c.where(cb.equal(picture.get(Picture_.description), so.getPictureDescription()));
+        if (so.getPictureDescription() != null && !so.getPictureDescription().equals("")) {
+            predicates.add(cb.and(cb.equal(picture.get(Picture_.description), so.getPictureDescription())));
         }
-        if (so.getPictureQuality() != null) {
-            c.where(cb.equal(picture.get(Picture_.quality), so.getPictureQuality()));
+        if (so.getPictureQuality() != null && !so.getPictureQuality().equals("")) {
+            predicates.add(cb.and(cb.equal(picture.get(Picture_.quality), so.getPictureQuality())));
         }
-        if (so.getPictureTags() != null) {
-            Join p = picture.join(Picture_.tags);
-            for (int i = 0; i < so.getPictureTags().size(); i++) {
-                c.where(cb.equal(p.get(Tag_.name), so.getPictureTags().get(i)));
+        if (tags != null) {
+            for (int i = 0; i < tags.size(); i++) {
+                predicates.add(cb.isMember(tags.get(i), picture.get(Picture_.tags)));
             }
         }
-        if (so.getSort() != null) {
-            if (so.getSort().equals("Ascending")) {
-                c.orderBy(cb.asc(picture.get(Picture_.date)));
-            } else if (so.getSort().equals("Descending")) {
-                c.orderBy(cb.desc(picture.get(Picture_.date)));
-            }
-        }
+        c.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
+
         return (int) (long) manager.createQuery(c).getSingleResult();
     }
 }

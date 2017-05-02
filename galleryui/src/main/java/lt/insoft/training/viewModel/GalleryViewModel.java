@@ -3,7 +3,6 @@ package lt.insoft.training.viewModel;
 import lt.insoft.training.validators.LengthValidator;
 import lt.insoft.training.model.Folder;
 import lt.insoft.training.services.FolderService;
-import lt.insoft.training.viewModel.utils.ImageToZkImageConverter;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.zkoss.bind.annotation.*;
@@ -22,15 +21,15 @@ public class GalleryViewModel {
     private Long selectedId;
     private int foldersCount = 0;
     private int currentPage = 0;
-    private final int PAGINATION_BY = 6;
-    ListModelList<Folder> availableFolders;
-    LengthValidator folderNameValidator = new LengthValidator();
+    private final int PAGE_SIZE = 6;
+    private ListModelList<Folder> availableFolders;
+    private LengthValidator folderNameValidator = new LengthValidator();
 
     @Init
     public void init() {
         foldersCount = folderService.foldersCount();
-        int firstFolderIndex = currentPage * PAGINATION_BY;
-        availableFolders = new ListModelList(folderService.getFolders(firstFolderIndex, PAGINATION_BY));
+        int firstFolderIndex = currentPage * PAGE_SIZE;
+        availableFolders = new ListModelList(folderService.getFolders(firstFolderIndex, PAGE_SIZE));
     }
 
     @Command
@@ -41,9 +40,8 @@ public class GalleryViewModel {
     @Command
     @NotifyChange({"availableFolders", "foldersCount", "folder"})
     public void add() {
-        Clients.evalJavaScript("dismissAddFolderModal();");
         folderService.addFolder(folder);
-        if (availableFolders.size() < PAGINATION_BY) {
+        if (availableFolders.size() < PAGE_SIZE) {
             availableFolders.add(folder);
         }
         foldersCount++;
@@ -58,8 +56,8 @@ public class GalleryViewModel {
                 if (folderService.removeFolder(id)) {
                     availableFolders.removeIf(p -> p.getId().equals(id));
                     foldersCount--;
-                    if (foldersCount > currentPage * PAGINATION_BY + availableFolders.size()) {
-                        availableFolders.add(folderService.getFolders(PAGINATION_BY - 1, 1).get(0));
+                    if (foldersCount > currentPage * PAGE_SIZE + availableFolders.size()) {
+                        availableFolders.add(folderService.getFolders(PAGE_SIZE - 1, 1).get(0));
                     }
                 }
             } catch (JpaSystemException jpaE) {
@@ -72,7 +70,7 @@ public class GalleryViewModel {
     @Command
     @NotifyChange({"availableFolders", "folder"})
     public void editFolderName() {
-        Clients.evalJavaScript("dismissChangeNameModal();");
+        //Clients.evalJavaScript("dismissChangeNameModal();");
         String oldName = "";
         this.folderName = folder.getName();
         folder = new Folder();
@@ -139,8 +137,9 @@ public class GalleryViewModel {
     }
 
     @Command
-    @NotifyChange({"folder"})
+    @NotifyChange({"folder","selectedId"})
     public void undo() {
+        this.selectedId = null;
         folder = new Folder();
     }
 
@@ -172,7 +171,7 @@ public class GalleryViewModel {
     @NotifyChange({"foldersCount", "availableFolders"})
     public void paging() {
         foldersCount = folderService.foldersCount();
-        availableFolders = new ListModelList(folderService.getFolders(currentPage * PAGINATION_BY, PAGINATION_BY));
+        availableFolders = new ListModelList(folderService.getFolders(currentPage * PAGE_SIZE, PAGE_SIZE));
     }
 
     public ListModelList<Folder> getAvailableFolders() {
@@ -183,8 +182,8 @@ public class GalleryViewModel {
         this.availableFolders = availableFolders;
     }
 
-    public int getPAGINATION_BY() {
-        return PAGINATION_BY;
+    public int getPageSize() {
+        return PAGE_SIZE;
     }
 
     public LengthValidator getFolderNameValidator() {
@@ -194,4 +193,17 @@ public class GalleryViewModel {
     public void setFolderNameValidator(LengthValidator folderNameValidator) {
         this.folderNameValidator = folderNameValidator;
     }
+
+    @Command
+    public void prepareFolder() {
+    }
+
+    @Command
+    public void showWarningOnFolderRemove(@BindingParam("id") Long id) {
+    }
+
+    @Command
+    public void prepareEditFolderName(@BindingParam("id") Long id){
+    }
+
 }
