@@ -81,7 +81,7 @@
                 </template>
             </x:div>
             <paging onPaging="@command('paging')"
-                    totalSize="@bind(vm.picturesCount)" pageSize="@bind(vm.PAGINATION_BY)"
+                    totalSize="@bind(vm.picturesCount)" pageSize="@bind(vm.pageSize)"
                     activePage="@bind(vm.currentPage)" sclass="pagination2"
                     visible="@bind(not empty vm.thumbnails)"/>
             <customModal title="@load(vm.selectedPicture.name, after='open')" type="picture" >

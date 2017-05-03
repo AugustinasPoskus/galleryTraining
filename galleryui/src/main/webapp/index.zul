@@ -51,53 +51,6 @@
                     activePage="@bind(vm.currentPage)" sclass="pagination2"/>
         </x:div>
         <include src="modal.zul"/>
-        <!--<x:div id="changeFolderNameModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">-->
-            <!--<x:div class="modal-dialog">-->
-                <!--<x:div class="modal-content">-->
-                    <!--<x:div class="modal-header">-->
-                        <!--<x:button id="folderName" type="button" class="close" data-dismiss="modal"-->
-                                  <!--onClick="@command('undo')">&#10006;</x:button>-->
-                        <!--<x:h4 class="modal-title">Please enter new folder name:</x:h4>-->
-                    <!--</x:div>-->
-                    <!--<x:div class="modal-body">-->
-                        <!--<div form="@id('fx') @load(vm.folder) @save(vm.folder, before='editFolderName')">-->
-                            <!--<x:div class="form-group">-->
-                                <!--<x:label for="nameField" class="form-control-label">Name:</x:label>-->
-                                <!--<textbox id="nameField"-->
-                                         <!--value="@bind(fx.name) @validator(vm.folderNameValidator, maxLength=15, minLength=3, message='Your folder name should be between 3 and 15 characters!')"-->
-                                         <!--tabindex="1" sclass="form-control"/>-->
-                                <!--<label value="@bind(vmsgs[nameField])" sclass="error"/>-->
-                            <!--</x:div>-->
-                        <!--</div>-->
-                    <!--</x:div>-->
-                    <!--<x:div class="modal-footer">-->
-                        <!--<button label="Submit" sclass="btn btn-default" onClick="@command('editFolderName')"/>-->
-                    <!--</x:div>-->
-                <!--</x:div>-->
-            <!--</x:div>-->
-        <!--</x:div>-->
-        <!--<x:div id="confirmationModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">-->
-            <!--<x:div class="modal-dialog">-->
-                <!--<x:div class="modal-content">-->
-                    <!--<x:div class="modal-header">-->
-                        <!--<x:button type="button" class="close" data-dismiss="modal" aria-hidden="true">-->
-                            <!--&#10006;</x:button>-->
-                        <!--<x:h4 class="modal-title">Confirmation</x:h4>-->
-                    <!--</x:div>-->
-                    <!--<x:div class="modal-body">-->
-                        <!--<label value="Do you want to delete "/>-->
-                        <!--<label sclass="boldLabel" value="@bind(vm.folderName)"/>-->
-                        <!--<label value=" folder permanently? It may have some pictures in it."/>-->
-                    <!--</x:div>-->
-                    <!--<x:div class="modal-footer">-->
-                        <!--<x:button type="button" class="btn btn-default" data-dismiss="modal">Leave it</x:button>-->
-                        <!--<x:button type="button" class="btn btn-danger" onClick="@command('remove', id=vm.selectedId) "-->
-                                  <!--data-dismiss="modal">Delete-->
-                        <!--</x:button>-->
-                    <!--</x:div>-->
-                <!--</x:div>-->
-            <!--</x:div>-->
-        <!--</x:div>-->
         <customModal type="form" title="@load('Create new folder!', after='prepareFolder')" show="@load('false', after={'add', 'undo'})">
             <x:div class="modal-body">
                 <div form="@id('fol') @load(vm.folder) @save(vm.folder, before='add')">
@@ -138,14 +91,22 @@
                     <x:div class="form-group">
                         <x:label for="nameField" class="form-control-label">Name:</x:label>
                         <textbox id="nameField"
-                                 value="@load(fx.name) @validator(vm.folderNameValidator, maxLength=15, minLength=3, message='Your folder name should be between 3 and 15 characters!')"
-                                 tabindex="1" sclass="form-control"/>
+                            value="@bind(fx.name) @validator(vm.folderNameValidator, maxLength=15, minLength=3, message='Your folder name should be between 3 and 15 characters!')"
+                            tabindex="1" sclass="form-control"/>
                         <label value="@bind(vmsgs[nameField])" sclass="error"/>
                     </x:div>
                 </div>
             </x:div>
             <x:div class="modal-footer">
                 <button label="Submit" sclass="btn btn-default" onClick="@command('editFolderName')"/>
+            </x:div>
+        </customModal>
+        <customModal type="warning" title="@bind(vm.warning ? 'Warning!' : null)" show="@load('false', after='close')">
+            <x:div class="modal-body">
+                <label value="@bind(vm.errorMessage)"></label>
+            </x:div>
+            <x:div class="modal-footer">
+                <x:button type="button" class="btn btn-default" onClick="@command('close')">Close</x:button>
             </x:div>
         </customModal>
     </x:div>

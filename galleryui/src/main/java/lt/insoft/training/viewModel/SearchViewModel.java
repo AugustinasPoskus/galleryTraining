@@ -28,7 +28,7 @@ public class SearchViewModel extends SelectorComposer<Component> {
     private Radiogroup radiogroup;
     private String tags = "";
     private Picture selectedPicture;
-    private final int PAGINATION_BY = 8;
+    private final int PAGE_SIZE = 8;
     private int picturesCount = 0;
     private int currentPage = 0;
 
@@ -60,7 +60,7 @@ public class SearchViewModel extends SelectorComposer<Component> {
         searchObject.setPictureTags(tagList);
         picturesCount = searchService.getSearchPicturesCount(searchObject);
         if(picturesCount != 0){
-            thumbnails = searchService.searchThumbnails(currentPage * PAGINATION_BY, PAGINATION_BY, searchObject);
+            thumbnails = searchService.searchThumbnails(currentPage * PAGE_SIZE, PAGE_SIZE, searchObject);
         }else{
             thumbnails.clear();
         }
@@ -100,11 +100,11 @@ public class SearchViewModel extends SelectorComposer<Component> {
     @NotifyChange({"picturesCount", "thumbnails"})
     public void paging() {
         picturesCount = searchService.getSearchPicturesCount(lastSearchedFields);
-        thumbnails = searchService.searchThumbnails(currentPage * PAGINATION_BY, PAGINATION_BY, lastSearchedFields);
+        thumbnails = searchService.searchThumbnails(currentPage * PAGE_SIZE, PAGE_SIZE, lastSearchedFields);
     }
 
-    public int getPAGINATION_BY() {
-        return PAGINATION_BY;
+    public int getPageSize() {
+        return PAGE_SIZE;
     }
 
     public int getPicturesCount() {

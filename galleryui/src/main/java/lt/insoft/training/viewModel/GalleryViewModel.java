@@ -1,18 +1,18 @@
 package lt.insoft.training.viewModel;
 
-import lt.insoft.training.validators.LengthValidator;
 import lt.insoft.training.model.Folder;
 import lt.insoft.training.services.FolderService;
+import lt.insoft.training.validators.LengthValidator;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
-import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.ListModelList;
 
 import java.util.List;
 
+@ToClientCommand("callModalWarning")
 public class GalleryViewModel {
     @WireVariable
     private FolderService folderService;
@@ -23,7 +23,9 @@ public class GalleryViewModel {
     private int currentPage = 0;
     private final int PAGE_SIZE = 6;
     private ListModelList<Folder> availableFolders;
+    private String errorMessage = "";
     private LengthValidator folderNameValidator = new LengthValidator();
+    private boolean isWarning = false;
 
     @Init
     public void init() {
@@ -49,8 +51,9 @@ public class GalleryViewModel {
     }
 
     @Command
-    @NotifyChange({"availableFolders", "foldersCount"})
+    @NotifyChange({"availableFolders", "foldersCount", "errorMessage", "warning"})
     public void remove(@BindingParam("id") Long id) {
+        isWarning = false;
         if (this.containsId(id)) {
             try {
                 if (folderService.removeFolder(id)) {
@@ -61,20 +64,20 @@ public class GalleryViewModel {
                     }
                 }
             } catch (JpaSystemException jpaE) {
-                String message = "Folder was already deleted! Please reload page and repeat your operation!";
-                Clients.evalJavaScript("modalWarning('" + message + "');");
+                this.callModalWarning("Folder was already deleted! Please reload page and repeat your operation!");
+                isWarning = true;
             }
         }
     }
 
     @Command
-    @NotifyChange({"availableFolders", "folder"})
+    @NotifyChange({"availableFolders", "folder", "errorMessage", "warning"})
     public void editFolderName() {
-        //Clients.evalJavaScript("dismissChangeNameModal();");
+        isWarning = false;
         String oldName = "";
         this.folderName = folder.getName();
         folder = new Folder();
-        if (this.containsId(this.selectedId) && !(this.folderName.equals(""))) {
+        if (this.containsId(this.getSelectedId()) && !(this.folderName.equals(""))) {
             List<Folder> list = this.getAvailableFolders();
             for (Folder folder : list) {
                 if (folder.getId().equals(this.selectedId)) {
@@ -85,8 +88,8 @@ public class GalleryViewModel {
                         break;
                     } catch (JpaSystemException optLocke) {
                         folder.setName(oldName);
-                        String message = "Folder name was already changed! Please reload page and repeat your operation!";
-                        Clients.evalJavaScript("modalWarning('" + message + "');");
+                        this.callModalWarning("Folder name was already changed! Please reload page and repeat your operation!");
+                        isWarning = true;
                         break;
                     }
                 }
@@ -199,11 +202,42 @@ public class GalleryViewModel {
     }
 
     @Command
+    @NotifyChange({"selectedId"})
     public void showWarningOnFolderRemove(@BindingParam("id") Long id) {
+        this.selectedId = id;
     }
 
     @Command
+    @NotifyChange({"selectedId", "folderName"})
     public void prepareEditFolderName(@BindingParam("id") Long id){
+        this.selectedId = id;
+        for (Folder folder : availableFolders) {
+            if (folder.getId().equals(this.selectedId)) {
+                this.folderName = folder.getName();
+            }
+        }
     }
 
+    @Command
+    @NotifyChange("errorMessage")
+    public void callModalWarning(String warning){
+        this.errorMessage = warning;
+    }
+
+    @Command
+    public void close(){
+
+    }
+
+    public String getErrorMessage() {
+        return this.errorMessage;
+    }
+
+    public boolean isWarning() {
+        return isWarning;
+    }
+
+    public void setWarning(boolean warning) {
+        isWarning = warning;
+    }
 }

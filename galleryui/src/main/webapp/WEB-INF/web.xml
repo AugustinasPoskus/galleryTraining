@@ -6,8 +6,8 @@
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
          version="2.4">
 
-    <description><![CDATA[ZK Essentials]]></description>
-    <display-name>ZK Essentials</display-name>
+    <description><![CDATA[Galley]]></description>
+    <display-name>Gallery</display-name>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>

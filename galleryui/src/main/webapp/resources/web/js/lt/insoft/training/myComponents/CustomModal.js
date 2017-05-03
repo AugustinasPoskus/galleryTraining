@@ -41,10 +41,15 @@ lt.insoft.training.myComponents.CustomModal = zk.$extends(zk.Widget, {
             '<div class="modal-content">',
                 '<div class="modal-header">',
                     '<button type="button" id="', uuid, '-close" class="close">&#10006;</button>',
-                    '<h4 class="gallery-title" id="', uuid, '-title">', this._title, '</h4>',
+                    '<h4 class="');
+        if(this._type === 'picture'){
+            out.push('gallery-title"');
+        }else {
+            out.push('title"');
+        }
+        out.push('id="', uuid, '-title">', this._title, '</h4>',
                 '</div>');
                     for (var w = this.firstChild; w; w = w.nextSibling){
-                        console.log(w);
                         w.redraw(out);
                     }
         if (this._type === 'form') {

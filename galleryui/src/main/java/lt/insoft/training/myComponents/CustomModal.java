@@ -12,9 +12,11 @@ public class CustomModal extends org.zkoss.zk.ui.HtmlBasedComponent {
     private boolean onClose = false;
 
     public void setTitle(String title) {
-        title = title;
-        smartUpdate("title", title);
-        this.setShow(true);
+        if(title != null && title != ""){
+            title = title;
+            smartUpdate("title", title);
+            this.setShow(true);
+        }
     }
 
     public String getTitle() {
