@@ -5,14 +5,17 @@ import lt.insoft.training.services.FolderService;
 import lt.insoft.training.validators.LengthValidator;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.select.Selectors;
+import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.ListModelList;
 
 import java.util.List;
 
-@ToClientCommand("callModalWarning")
 public class GalleryViewModel {
     @WireVariable
     private FolderService folderService;
@@ -61,6 +64,9 @@ public class GalleryViewModel {
                     foldersCount--;
                     if (foldersCount > currentPage * PAGE_SIZE + availableFolders.size()) {
                         availableFolders.add(folderService.getFolders(PAGE_SIZE - 1, 1).get(0));
+                    } else if(foldersCount != 0 && availableFolders.size() == 0 && currentPage > 0){
+                        currentPage--;
+                        this.paging();
                     }
                 }
             } catch (JpaSystemException jpaE) {

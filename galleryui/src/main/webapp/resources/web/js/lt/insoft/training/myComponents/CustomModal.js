@@ -1,5 +1,4 @@
 lt.insoft.training.myComponents.CustomModal = zk.$extends(zk.Widget, {
-
     _title: '',
     _type: '',
     _show: '',
@@ -30,6 +29,7 @@ lt.insoft.training.myComponents.CustomModal = zk.$extends(zk.Widget, {
     },
 
     redraw: function (out) {
+        output = out;
         var uuid = this.uuid;
         out.push('<div aria-labelledby="enlargeImageModal" ',
         'class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" id="', uuid, '">');
@@ -52,18 +52,11 @@ lt.insoft.training.myComponents.CustomModal = zk.$extends(zk.Widget, {
                     for (var w = this.firstChild; w; w = w.nextSibling){
                         w.redraw(out);
                     }
-        if (this._type === 'form') {
-
-        }
         out.push('</div>',
                 '</div>',
             '</div>'
         );
     },
-
-//    _doSubmit: function(evt){
-//        alert("submit");
-//    },
 
     _doClose: function(evt) {
         this.fire("onClick",{}, {toServer:true});
@@ -72,12 +65,10 @@ lt.insoft.training.myComponents.CustomModal = zk.$extends(zk.Widget, {
     bind_: function(evt) {
         this.$supers('bind_', arguments);
         this.domListen_(this.$n('close'), 'onClick', '_doClose');
-        //this.domListen_(this.$n('submit'), 'onClick', '_doSubmit');
     },
 
     unbind_: function(evt) {
         this.domUnlisten_(this.$n('close'), 'onClick', '_doClose');
-        //this.domUnlisten_(this.$n('submit'), 'onClick', '_doSubmit');
         this.$supers('unbind_', arguments);
     }
 

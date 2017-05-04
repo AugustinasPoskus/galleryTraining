@@ -40,3 +40,16 @@ input[type=radio] {
 .body{
     overflow-y:auto;
 }
+
+.imageBorder:hover {
+    cursor:pointer;
+}
+
+.imageBorder {
+    border:1px solid #021a40;
+}
+
+.picture, .text-center {
+    padding-bottom: 30px;
+}
+

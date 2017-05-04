@@ -13,6 +13,7 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.Radiogroup;
 
+import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +46,11 @@ public class SearchViewModel extends SelectorComposer<Component> {
     @Command
     @NotifyChange("selectedPicture")
     public void open(@BindingParam("id") Long id) {
-        selectedPicture = searchService.findFullPicture(id);
+        try {
+            selectedPicture = searchService.findFullPicture(id);
+        }catch (NoResultException e){
+            selectedPicture = null;
+        }
     }
 
     @Command
@@ -118,4 +123,8 @@ public class SearchViewModel extends SelectorComposer<Component> {
     public void setCurrentPage(int currentPage) {
         this.currentPage = currentPage;
     }
+
+    @Command
+    public void close(){}
+
 }

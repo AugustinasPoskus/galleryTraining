@@ -20,9 +20,9 @@
                 </x:div>
                 <x:div class="form-group">
                     <x:label class="form-control-label">Sort by insertion date:</x:label>
-                    <radiogroup id="rg" onCheck="search.sort = self.selectedItem.label">
-                        <radio id="sortAsc" label="Ascending"></radio>
-                        <radio id="sortDsc" label="Descending"></radio>
+                    <radiogroup id="rg" onCheck="search.sort = self.selectedItem.id">
+                        <radio id="Asc" label="From oldest "></radio>
+                        <radio id="Dsc" label="From newest"></radio>
                         <radio id="noSort" label="Don't sort" selected="true"></radio>
                     </radiogroup>
                 </x:div>
@@ -68,7 +68,7 @@
                 </x:div>
             </div>
             <x:div class="text-center">
-                <button label="Submit" sclass="btn btn-default" onClick="@command('search')" />
+                <button label="Submit" sclass="btn btn-default" onClick="@command('search')"/>
             </x:div>
             <x:div class=" col-lg-12 row" children="@bind(vm.thumbnails)">
                 <template name="children">
@@ -84,10 +84,19 @@
                     totalSize="@bind(vm.picturesCount)" pageSize="@bind(vm.pageSize)"
                     activePage="@bind(vm.currentPage)" sclass="pagination2"
                     visible="@bind(not empty vm.thumbnails)"/>
-            <customModal title="@load(vm.selectedPicture.name, after='open')" type="picture" >
+            <customModal title="@load(vm.selectedPicture.name, after='open')" type="picture">
                 <x:div class="modal-body">
                     <image id="image-gallery-image" sclass="enlargeImageModalSource"
                            content="@load(vm.selectedPicture.pictureData.data, after='open') @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"/>
+                </x:div>
+            </customModal>
+            <customModal title="@load(vm.selectedPicture eq null ? 'warning' : null, after='open')" type="warning"
+                         show = "@load('false', after={'close'})">
+                <x:div class="modal-body">
+                    <label value="Picture was already deleted, please search again!"></label>
+                </x:div>
+                <x:div class="modal-footer">
+                    <x:button type="button" class="btn btn-default" onClick="@command('close')">Close</x:button>
                 </x:div>
             </customModal>
         </x:div>

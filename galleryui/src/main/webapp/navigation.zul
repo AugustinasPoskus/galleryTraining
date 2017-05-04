@@ -1,15 +1,12 @@
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
-    <x:nav class="navbar navbar-inverse">
+    <x:nav class="navbar navbar-inverse navbar-static-top">
         <x:div class="container-fluid">
             <x:div class="navbar-header">
-                <x:a class="navbar-brand" href="/index.zul">Gallery</x:a>
+                <x:a class="navbar-brand">Gallery</x:a>
             </x:div>
             <x:ul class="nav navbar-nav">
-                <x:form class="navbar-form navbar-left" role="search">
-                    <x:a href="/search.zul" class="btn btn-primary btn-lg">
-                        Search
-                    </x:a>
-                </x:form>
+                <x:li><a href="/index.zul">Home</a></x:li>
+                <x:li><a href="/search.zul">Search</a></x:li>
             </x:ul>
         </x:div>
     </x:nav>

@@ -1,9 +1,13 @@
 package lt.insoft.training.myComponents;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.zkoss.zk.au.AuRequest;
 import org.zkoss.zk.ui.select.annotation.Listen;
+import org.zkoss.zk.ui.select.annotation.WireVariable;
+import org.zkoss.zk.ui.sys.ContentRenderer;
 
 import java.awt.*;
+import java.io.IOException;
 
 public class CustomModal extends org.zkoss.zk.ui.HtmlBasedComponent {
     private String title = "";

@@ -137,26 +137,36 @@
             <!--</x:div>-->
             <customModal title="@load('Confirmation', after='setSelectedThumbnailId')" type="warning"
                          show="@load('false', after={'remove', 'undo'})">
+                    <x:div class="modal-body">
+                        <label value="Do you want to delete "/>
+                        <label sclass="boldLabel" value="@bind(vm.selectedPicture.name)"/>
+                        <label value=" picture permanently?"/>
+                    </x:div>
+                    <x:div class="modal-footer">
+                        <x:button type="button" class="btn btn-default" onClick="@command('undo')">Leave it</x:button>
+                        <x:button type="button" class="btn btn-danger"
+                                  onClick="@command('remove', id=vm.selectedThumbnailId)">
+                            Delete
+                        </x:button>
+                    </x:div>
+            </customModal>
+            <customModal title="@load(vm.selectedPicture eq null ? 'warning' : null, after={'open', 'setImageInformation', 'setImageInformationBeforeEdit'})" type="warning"
+                         show = "@load('false', after={'close'})">
                 <x:div class="modal-body">
-                    <label value="Do you want to delete "/>
-                    <label sclass="boldLabel" value="@bind(vm.selectedPicture.name)"/>
-                    <label value=" picture permanently?"/>
+                    <label value="Picture was already deleted, please reload page and repeat your action again!"></label>
                 </x:div>
                 <x:div class="modal-footer">
-                    <x:button type="button" class="btn btn-default" onClick="@command('undo')">Leave it</x:button>
-                    <x:button type="button" class="btn btn-danger"
-                              onClick="@command('remove', id=vm.selectedThumbnailId)">
-                        Delete
-                    </x:button>
+                    <x:button type="button" class="btn btn-default" onClick="@command('close')">Close</x:button>
                 </x:div>
             </customModal>
-            <customModal title="@load(vm.selectedPicture.name, after='open')" type="picture" >
-                <x:div class="modal-body">
-                    <image id="image-gallery-image" sclass="enlargeImageModalSource"
-                           content="@load(vm.selectedPicture.pictureData.data, after='open') @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"/>
-                </x:div>
+            <customModal title="@load(vm.selectedPicture.name, after='open')" type="picture"
+                show = "@load('false', after={'close'})">
+                    <x:div class="modal-body">
+                        <image id="image-gallery-image" sclass="enlargeImageModalSource"
+                           content="@load(vm.selectedPicture.pictureData.data , after='open') @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"/>
+                    </x:div>
             </customModal>
-            <customModal type="information" title="@load('Image information!', after='setImageInformation')">
+            <customModal type="information" title="@load(vm.selectedPicture eq null ? null : 'Image information!', after='setImageInformation')">
                 <x:div class="modal-body">
                     <x:div class="form-group">
                         <x:label class="form-control-label">Name:</x:label>
@@ -187,7 +197,7 @@
                     </x:div>
                 </x:div>
             </customModal>
-            <customModal title="@load('Edit image information!', after='setImageInformationBeforeEdit')" type="picture" show="@load('false', after={'close', 'update'})">
+            <customModal title="@load(vm.selectedPicture eq null ? null : 'Edit image information!', after='setImageInformationBeforeEdit')" type="picture" show="@load('false', after={'close', 'update'})">
                 <x:div class="modal-body">
                     <div form="@id('pict') @load(vm.selectedPicture) @save(vm.selectedPicture, before='update')">
                         <x:div class="form-group">

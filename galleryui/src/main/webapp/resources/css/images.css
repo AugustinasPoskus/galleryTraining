@@ -48,7 +48,7 @@ textarea {
      padding-bottom: 30px;
 }
 
-img:hover {
+.imageBorder:hover {
     cursor:pointer;
 }
 

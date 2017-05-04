@@ -120,9 +120,9 @@ public class PictureRepImpl implements PictureRepository {
             }
         }
         if (so.getSort() != null) {
-            if (so.getSort().equals("Ascending")) {
+            if (so.getSort().equals("Asc")) {
                 query.orderBy(cb.asc(picture.get(Picture_.date)));
-            } else if (so.getSort().equals("Descending")) {
+            } else if (so.getSort().equals("Dsc")) {
                 query.orderBy(cb.desc(picture.get(Picture_.date)));
             }
         }

@@ -1,26 +1,27 @@
 package lt.insoft.training.viewModel;
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+import lt.insoft.training.model.*;
+import lt.insoft.training.services.FolderService;
+import lt.insoft.training.services.PictureService;
 import lt.insoft.training.validators.LengthValidator;
 import lt.insoft.training.validators.QualityValidator;
 import lt.insoft.training.validators.TagsValidator;
 import lt.insoft.training.validators.UploadValidator;
 import lt.insoft.training.viewModel.utils.ImageScale;
-import lt.insoft.training.model.*;
-import lt.insoft.training.services.FolderService;
-import lt.insoft.training.services.PictureService;
-import org.apache.commons.io.IOUtils;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
-import org.zkoss.zk.ui.util.Clients;
 
+import javax.imageio.ImageIO;
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class ImagesViewModel {
 //    }
 
     @Command
-    @NotifyChange({"selectedPicture", "tags", "warning", "errorMessage"})
+    @NotifyChange({"selectedPicture", "tags"})
     public void setImageInformation(@BindingParam("id") Long id) {
         isWarning = false;
         try {
@@ -104,15 +105,18 @@ public class ImagesViewModel {
                 }
             }
         } catch (NoResultException e) {
-            errorMessage = MESSAGE;
-            isWarning = true;
+            selectedPicture = null;
         }
     }
 
     @Command
     @NotifyChange("selectedPicture")
     public void open(@BindingParam("id") Long id) {
-        selectedPicture = pictureService.getPictureInfoById(id);
+        try {
+            selectedPicture = pictureService.getPictureInfoById(id);
+        } catch (NoResultException e){
+            selectedPicture = null;
+        }
     }
 
     @Command
@@ -160,6 +164,9 @@ public class ImagesViewModel {
             picturesCount--;
             if (picturesCount > currentPage * PAGE_SIZE + pictureThumbnailList.size()) {
                 pictureThumbnailList.add(pictureService.getPictureThumbnail(PAGE_SIZE - 1, 1, folder.getId()).get(0));
+            } else if(picturesCount != 0 && pictureThumbnailList.size() == 0 && currentPage > 0){
+                currentPage--;
+                this.paging();
             }
         } catch (NoResultException e) {
             errorMessage = MESSAGE;
@@ -230,15 +237,14 @@ public class ImagesViewModel {
     }
 
     @Command
-    @NotifyChange({"warning", "errorMessage"})
+    @NotifyChange({"selectedPicture"})
     public void setSelectedThumbnailId(@BindingParam("id") Long selectedThumbnailId) {
         this.selectedThumbnailId = selectedThumbnailId;
         try {
             this.selectedPicture = pictureService.getPictureInfoById(selectedThumbnailId);
             //Clients.evalJavaScript("confirmationModal();");
         } catch (NoResultException e) {
-            errorMessage = MESSAGE;
-            isWarning = true;
+            selectedPicture = null;
         }
     }
 
@@ -302,7 +308,7 @@ public class ImagesViewModel {
     }
 
     @Command
-    @NotifyChange({"selectedPicture", "tags", "errorMessage", "warning"})
+    @NotifyChange({"selectedPicture", "tags"})
     public void setImageInformationBeforeEdit(@BindingParam("id") Long id) {
         try {
             selectedThumbnailId = id;
@@ -316,8 +322,7 @@ public class ImagesViewModel {
                 }
             }
         } catch (NoResultException e) {
-            errorMessage = MESSAGE;
-            isWarning = true;
+            selectedPicture = null;
         }
     }
 
@@ -346,4 +351,5 @@ public class ImagesViewModel {
     public void close(){
 
     }
+
 }
