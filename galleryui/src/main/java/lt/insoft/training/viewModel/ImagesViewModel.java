@@ -20,8 +20,11 @@ import javax.imageio.ImageIO;
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -327,8 +330,13 @@ public class ImagesViewModel {
     }
 
     @Command
+    @NotifyChange({"fileName", "picture", "tags"})
     public void prepareUpload(){
-
+        picture = new Picture();
+        pictureData = new PictureData();
+        thumbnail = new Thumbnail();
+        tags = "";
+        this.fileName = "No picture uploaded!";
     }
 
     public String getErrorMessage() {

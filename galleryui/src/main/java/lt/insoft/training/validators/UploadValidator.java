@@ -9,9 +9,9 @@ public class UploadValidator extends AbstractValidator {
 
     public void validate(ValidationContext ctx) {
         PictureData pictureData = (PictureData) ctx.getValidatorArg("upload");
-        String message = (String) ctx.getBindContext().getValidatorArg("message");
+        String message = (String) ctx.getValidatorArg("message");
         if (pictureData == null || pictureData.getData() == null) {
-            this.addInvalidMessage(ctx, "pictureUpload", message);
+            this.addInvalidMessage(ctx,"pictureUpload", message);
         }
     }
 }

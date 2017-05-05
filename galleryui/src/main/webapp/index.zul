@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 <?init class="org.zkoss.zk.ui.util.Composition"arg0="template.zul"?>
 <zk xmlns:n="native" xmlns:x="xhtml" xmlns:ca="client/attribute">
     <script src="resources/js/alert.js"/>
@@ -13,7 +11,6 @@
         <x:div class="page">
             <x:div class="buttonHolder">
                 <x:a id="addFolder" class="btn icon-btn btn-success" onClick="@command('prepareFolder')">
-                    <!--data-toggle="modal" data-target="#addFolder"-->
                     <span class="glyphicon btn-glyphicon glyphicon-plus img-circle text-success"/>
                     Add New Folder
                 </x:a>

@@ -7,10 +7,11 @@ public class TagsValidator extends AbstractValidator {
 
     public void validate(ValidationContext ctx) {
         int tagsCount = 6;
+        //String tags = (String) ctx.getValidatorArg("tags");
         String message = (String) ctx.getBindContext().getValidatorArg("message");
         String tags = (String) ctx.getProperty().getValue();
         if (!tags.matches("^$|^\\s*[\\w]+(\\s*,\\s*[\\w]+){0," + (tagsCount-1) + "}$")) {
-            this.addInvalidMessage(ctx, message);
+            addInvalidMessage(ctx, message);
         }
     }
 }
