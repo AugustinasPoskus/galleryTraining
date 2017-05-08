@@ -80,12 +80,13 @@
                     <image id="image-gallery-image" sclass="enlargeImageModalSource"
                        content="@load(vm.selectedPicture.pictureData.data , after='open') @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"/>
                 </x:div>
-                <x:div visible="@bind(vm.selectedPicture.name eq null ? true : false)"></x:div>
-                <x:div class="modal-body">
-                    <label value="Picture was already deleted, please reload page and repeat your action again!"></label>
-                </x:div>
-                <x:div class="modal-footer">
-                    <x:button type="button" class="btn btn-default" onClick="@command('close')">Close</x:button>
+                <x:div visible="@bind(vm.selectedPicture.name eq null ? true : false)">
+                    <x:div class="modal-body">
+                        <label value="Picture was already deleted, please reload page and repeat your action again!"></label>
+                    </x:div>
+                    <x:div class="modal-footer">
+                        <x:button type="button" class="btn btn-default" onClick="@command('close')">Close</x:button>
+                    </x:div>
                 </x:div>
             </customModal>
             <customModal type="information" title="@load(vm.selectedPicture eq null ? null : 'Image information!', after='setImageInformation')">
