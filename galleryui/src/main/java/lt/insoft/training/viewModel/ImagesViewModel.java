@@ -123,7 +123,7 @@ public class ImagesViewModel {
     }
 
     @Command
-    @NotifyChange({"fileName", "warning", "errorMessage"})
+    @NotifyChange({"fileName", "warning", "errorMessage", "pictureData"})
     public void doUploadFile(@BindingParam("file") Media image) {
         isWarning = false;
         if (!image.equals(null)) {
@@ -135,7 +135,13 @@ public class ImagesViewModel {
             this.fileName = "Attached: " + image.getName();
             pictureData.setData(image.getByteData());
             String type = image.getFormat();
-            thumbnail.setData(ImageScale.resizeImage(pictureData.getData(), type));
+            try {
+                thumbnail.setData(ImageScale.resizeImage(pictureData.getData(), type));
+            }catch (Exception e){
+                errorMessage = "Uploaded file is not image or it's this is broken image!";
+                isWarning = true;
+                return;
+            }
         }
     }
 

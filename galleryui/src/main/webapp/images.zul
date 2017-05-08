@@ -65,7 +65,7 @@
                         </x:button>
                     </x:div>
             </customModal>
-            <customModal title="@load(vm.selectedPicture eq null ? 'warning' : null, after={'open', 'setImageInformation', 'setImageInformationBeforeEdit'})" type="warning"
+            <customModal title="@load(vm.selectedPicture eq null ? 'Warning' : null, after={'open', 'setImageInformation', 'setImageInformationBeforeEdit'})" type="warning"
                          show = "@load('false', after={'close'})">
                 <x:div class="modal-body">
                     <label value="Picture was already deleted, please reload page and repeat your action again!"></label>
@@ -80,7 +80,8 @@
                     <image id="image-gallery-image" sclass="enlargeImageModalSource"
                        content="@load(vm.selectedPicture.pictureData.data , after='open') @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"/>
                 </x:div>
-                <x:div class="modal-body" visible="@bind(vm.selectedPicture.name eq null ? true : false)">
+                <x:div visible="@bind(vm.selectedPicture.name eq null ? true : false)"></x:div>
+                <x:div class="modal-body">
                     <label value="Picture was already deleted, please reload page and repeat your action again!"></label>
                 </x:div>
                 <x:div class="modal-footer">
@@ -201,7 +202,8 @@
                             <x:div>
                                 <button label="Upload Image"
                                         upload="true,maxsize=10000,multiple=false"
-                                        onUpload="@command('doUploadFile', file=event.media)"/>
+                                        onUpload="@command('doUploadFile', file=event.media) @save('', after='doUploadFile') @validator(vm.uploadValidator,
+                        upload=vm.pictureData, message='Please upload a picture!')"/>
                                 <label id="pictureUpload" value="@bind(vm.fileName)"/>
                             </x:div>
                             <label sclass="error block" value="@bind(vmsgs['pictureUpload'])"/>
