@@ -4,6 +4,7 @@ import lt.insoft.training.repositories.FolderRepository;
 import lt.insoft.training.model.Folder;
 import lt.insoft.training.model.Folder_;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.persistence.criteria.*;
@@ -16,7 +17,7 @@ public class FolderRepImpl implements FolderRepository {
     private EntityManager manager;
 
     public Folder getFolder(Long id) {
-        if (!id.equals(null)) {
+        if (id != null) {
             return manager.find(Folder.class, id);
         }
         return null;
@@ -48,8 +49,9 @@ public class FolderRepImpl implements FolderRepository {
         }
     }
 
+    @Transactional
     public boolean addFolder(Folder folder) {
-        if (!folder.getName().equals(null)) {
+        if (folder.getName() != null && folder.getDate() != null) {
             manager.persist(folder);
             manager.flush();
             return true;
@@ -57,15 +59,14 @@ public class FolderRepImpl implements FolderRepository {
         return false;
     }
 
+    @Transactional
     public Folder updateFolder(Folder folder, String name) {
-        Folder folderRef = manager.getReference(Folder.class, folder.getId());
-        try {
+        if(name != null) {
             folder.setName(name);
             Folder newFolder = manager.merge(folder);
             return newFolder;
-        } catch (PersistenceException lockEx) {
-            return null;
         }
+        return null;
     }
 
     public int getFoldersCount() {

@@ -175,4 +175,5 @@ public class PictureRepImpl implements PictureRepository {
 
         return (int) (long) manager.createQuery(c).getSingleResult();
     }
+
 }

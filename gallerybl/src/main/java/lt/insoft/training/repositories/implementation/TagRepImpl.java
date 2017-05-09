@@ -34,8 +34,11 @@ public class TagRepImpl implements TagRepository {
 
     @Transactional
     public Tag insertTag(Tag tag) {
-        manager.persist(tag);
-        return tag;
+        if(tag != null && tag.getName() != null && !tag.getName().equals("")) {
+            manager.persist(tag);
+            return tag;
+        }
+        return null;
     }
 
     @Transactional
@@ -44,6 +47,7 @@ public class TagRepImpl implements TagRepository {
         CriteriaQuery<Tag> criteria = builder.createQuery(Tag.class);
         Root<Tag> from = criteria.from(Tag.class);
         criteria.select(from);
+        criteria.orderBy(builder.asc(from.get(Tag_.name)));
         criteria.where(builder.equal(from.get(Tag_.name), name));
         TypedQuery<Tag> typed = manager.createQuery(criteria);
         return typed.getResultList();

@@ -14,6 +14,7 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.ListModelList;
 
+import javax.persistence.OptimisticLockException;
 import java.util.List;
 
 public class GalleryViewModel {
@@ -92,7 +93,7 @@ public class GalleryViewModel {
                         folder = folderService.updateFolder(folder, this.folderName);
                         this.mergeFolders(folder);
                         break;
-                    } catch (JpaSystemException optLocke) {
+                    } catch (OptimisticLockException optLocke) {
                         folder.setName(oldName);
                         this.callModalWarning("Folder name was already changed! Please reload page and repeat your operation!");
                         isWarning = true;
