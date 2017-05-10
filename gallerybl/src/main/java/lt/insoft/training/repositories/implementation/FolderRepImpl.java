@@ -53,7 +53,6 @@ public class FolderRepImpl implements FolderRepository {
     public boolean addFolder(Folder folder) {
         if (folder.getName() != null && folder.getDate() != null) {
             manager.persist(folder);
-            manager.flush();
             return true;
         }
         return false;
@@ -61,12 +60,16 @@ public class FolderRepImpl implements FolderRepository {
 
     @Transactional
     public Folder updateFolder(Folder folder, String name) {
-        if(name != null) {
-            folder.setName(name);
-            Folder newFolder = manager.merge(folder);
-            return newFolder;
+        if(name == null || folder == null || folder.getId() == null) {
+            return null;
         }
-        return null;
+        Folder foundFolder = manager.getReference(Folder.class, folder.getId());
+        if(folder.getVersion() != foundFolder.getVersion()){
+            throw new OptimisticLockException();
+        }
+        folder.setName(name);
+        Folder newFolder = manager.merge(folder);
+        return newFolder;
     }
 
     public int getFoldersCount() {

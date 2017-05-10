@@ -14,6 +14,7 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zul.ListModelList;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import java.util.List;
 
@@ -96,6 +97,11 @@ public class GalleryViewModel {
                     } catch (OptimisticLockException optLocke) {
                         folder.setName(oldName);
                         this.callModalWarning("Folder name was already changed! Please reload page and repeat your operation!");
+                        isWarning = true;
+                        break;
+                    } catch (EntityNotFoundException entitynotFound){
+                        folder.setName(oldName);
+                        this.callModalWarning("Folder was already changed! Please reload page and repeat your operation!");
                         isWarning = true;
                         break;
                     }

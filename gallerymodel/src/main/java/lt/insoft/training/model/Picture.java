@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "AU_PICTURE")
-public class Picture {
+public class Picture implements Comparable<Picture> {
 
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID")
@@ -130,5 +130,10 @@ public class Picture {
 
     public void setVersion(Long version) {
         this.version = version;
+    }
+
+    @Override
+    public int compareTo(Picture o) {
+        return this.getDate().compareTo(o.getDate());
     }
 }

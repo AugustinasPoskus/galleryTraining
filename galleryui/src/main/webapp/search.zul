@@ -88,7 +88,7 @@
                            content="@load(vm.selectedPicture.pictureData.data, after='open') @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"/>
                 </x:div>
             </customModal>
-            <customModal title="@load(vm.selectedPicture eq null ? 'warning' : null, after='open')" type="warning"
+            <customModal title="@load(vm.selectedPicture eq null ? 'Warning' : null, after='open')" type="warning"
                          show = "@load('false', after={'close'})">
                 <x:div class="modal-body">
                     <label value="Picture was already deleted, please search again!"></label>

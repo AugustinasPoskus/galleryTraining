@@ -13,6 +13,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,14 +28,15 @@ public class FolderRepTest {
 
     @Autowired
     private FolderRepository folderRep;
-
+    @PersistenceContext
+    private EntityManager entityManager;
     @Test
     @Transactional
     public void testAddFolder() {
         Folder folder = new Folder();
         Date date = new Date();
         folder.setDate(date);
-        folder.setName("vardas");
+        folder.setName("name");
         Assert.assertEquals(true, folderRep.addFolder(folder));
     }
 
@@ -101,17 +106,18 @@ public class FolderRepTest {
         Folder folder = new Folder();
         Date date = new Date();
         folder.setDate(date);
-        folder.setName("vardas");
+        folder.setName("name");
         folderRep.addFolder(folder);
         folderRep.updateFolder(folder, updateName);
         Assert.assertEquals(updateName, folderRep.getFolder(folder.getId()).getName());
     }
 
-    @Test(expected = JpaSystemException.class)
+    @Test(expected = EntityNotFoundException.class)
     @Transactional
     public void testUpdateWithInvalidFolder() {
         String updateName = "updated";
         Folder folder1 = new Folder();
+        folder1.setId(50L);
         folderRep.updateFolder(folder1, updateName);
         TestTransaction.flagForCommit();
         TestTransaction.end();
@@ -151,7 +157,7 @@ public class FolderRepTest {
         for (int i = 0; i < count; i++) {
             Assert.assertEquals(i, folderRep.getFoldersCount());
             Folder folder = new Folder();
-            folder.setName("Aaaa");
+            folder.setName("name");
             folder.setDate(new Date());
             folderRep.addFolder(folder);
         }
@@ -168,8 +174,9 @@ public class FolderRepTest {
         List<Folder> foldersAspected = new ArrayList<>();
         for (int i = 0; i < addCount; i++) {
             Folder folder = new Folder();
-            folder.setName("Aaaa");
-            folder.setDate(new Date());
+            folder.setName("name");
+            Date date = new Date(System.currentTimeMillis() + 3600 * i * 1000);
+            folder.setDate(date);
             folderRep.addFolder(folder);
             foldersAspected.add(folder);
         }
@@ -206,5 +213,23 @@ public class FolderRepTest {
     @Transactional
     public void testGetFoldersListWithWrongParams(){
         Assert.assertEquals(null, folderRep.getFolders(-1,0));
+    }
+
+    @Transactional
+    public void testUpdateFolderOptimisticLocking() {
+        Long version = 10L;
+        Folder folder = new Folder();
+        folder.setName("name");
+        folder.setDate(new Date());
+        folder.setVersion(version);
+        folderRep.addFolder(folder);
+        Folder first = folderRep.getFolder(folder.getId());
+        first.setVersion(version -1);
+        folderRep.updateFolder(first, "first");
+    }
+
+    @Test(expected = OptimisticLockException.class)
+    public void testCallOptLock(){
+        this.testUpdateFolderOptimisticLocking();
     }
 }

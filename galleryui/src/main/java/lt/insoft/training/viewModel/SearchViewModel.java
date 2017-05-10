@@ -56,6 +56,7 @@ public class SearchViewModel extends SelectorComposer<Component> {
     @Command
     @NotifyChange({"thumbnails", "searchObject", "tags", "picturesCount"})
     public void search() {
+        currentPage = 0;
         List<String> tagList;
         if(tags.isEmpty()){
             tagList = null;

@@ -52,13 +52,14 @@ public class PictureRepImpl implements PictureRepository {
         return picture.getId();
     }
 
+    @Transactional
     public boolean removePicture(Long id) {
         Picture pictureInstance = manager.getReference(Picture.class, id);
-        if (pictureInstance != null) {
-            manager.remove(pictureInstance);
-            return true;
+        if (pictureInstance == null) {
+            return false;
         }
-        return false;
+        manager.remove(pictureInstance);
+        return true;
     }
 
     public List<Picture> getPictures(int from, int amount, Long folderId) {
@@ -135,17 +136,6 @@ public class PictureRepImpl implements PictureRepository {
         return thumbnails;
     }
 
-    public List<Picture> findPictureWithTags(PictureSearchFilter so) {
-        CriteriaBuilder cb = manager.getCriteriaBuilder();
-        CriteriaQuery<Picture> query = cb.createQuery(Picture.class);
-        Root<Picture> picture = query.from(Picture.class);
-        Join p = picture.join(Picture_.tags);
-        query.where(cb.equal(p.get(Tag_.name), so.getPictureTags().get(0)));
-        TypedQuery<Picture> typedQuery = manager.createQuery(query);
-        List<Picture> pictures = typedQuery.getResultList();
-        return pictures;
-    }
-
     public int getSearchPicturesCount(PictureSearchFilter so, List<Tag> tags) {
         CriteriaBuilder cb = manager.getCriteriaBuilder();
         CriteriaQuery<Long> c = cb.createQuery(Long.class);
@@ -174,6 +164,21 @@ public class PictureRepImpl implements PictureRepository {
         c.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
 
         return (int) (long) manager.createQuery(c).getSingleResult();
+    }
+
+    public List<Thumbnail> getThumbnails(int from, int amount, Long folderId) {
+        CriteriaBuilder cb = manager.getCriteriaBuilder();
+        CriteriaQuery<Thumbnail> query = cb.createQuery(Thumbnail.class);
+        Root<Picture> picture = query.from(Picture.class);
+        Join<Picture, Thumbnail> thumbs = picture.join(Picture_.thumbnail);
+        query.select(thumbs)
+                .where(cb.equal(picture.get(Picture_.folder), manager.getReference(Folder.class, folderId)))
+                .orderBy(cb.asc(picture.get(Picture_.date)));
+        TypedQuery<Thumbnail> typedQuery = manager.createQuery(query);
+        typedQuery.setFirstResult(from);
+        typedQuery.setMaxResults(amount);
+        List<Thumbnail> thumbnails = typedQuery.getResultList();
+        return thumbnails;
     }
 
 }

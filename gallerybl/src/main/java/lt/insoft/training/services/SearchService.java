@@ -26,14 +26,14 @@ public class SearchService {
     public List<Thumbnail> searchThumbnails(int from, int amount, PictureSearchFilter so) {
         List<String> tagList = so.getPictureTags();
         List<Tag> tags = new ArrayList<>();
-        if(tagList != null){
-            try{
-            tagList = new ArrayList<String>(new LinkedHashSet<String>(tagList));
-            for(String tagName:tagList ){
-                Tag tag = tagService.findTag(tagName);
-                tags.add(tag);
-            }
-            } catch (Exception e){
+        if (tagList != null) {
+            try {
+                tagList = new ArrayList<String>(new LinkedHashSet<String>(tagList));
+                for (String tagName : tagList) {
+                    Tag tag = tagService.findTag(tagName);
+                    tags.add(tag);
+                }
+            } catch (Exception e) {
                 return new ArrayList<>();
             }
         }
@@ -41,35 +41,32 @@ public class SearchService {
     }
 
     @Transactional
-    public Picture findFullPicture(Long id){
-        try {
-            Picture pic = pictureRep.findPictureByThumbnailId(id);
-            return pic;
-        } catch (NoResultException e) {
-            throw e;
-        }
+    public Picture findFullPicture(Long id) {
+        Picture pic = pictureRep.findPictureByThumbnailId(id);
+        return pic;
     }
 
     @Transactional
     public int getSearchPicturesCount(PictureSearchFilter so) {
         List<String> tagList = so.getPictureTags();
         List<Tag> tags = new ArrayList<>();
-        if(tagList != null){
+        if (tagList != null) {
             for (int i = 0; i < tagList.size(); i++) {
                 tagList.set(i, tagList.get(i).trim());
 
             }
             tagList = new ArrayList<String>(new LinkedHashSet<String>(tagList));
-            for(String tagName:tagList ){
+            for (String tagName : tagList) {
                 Tag tag = tagService.findTag(tagName);
-                if(tag != null){
+                if (tag != null) {
                     tags.add(tag);
                 }
             }
-            if(tags.size() == 0){
+            if (tags.size() == 0) {
                 return 0;
             }
         }
         return pictureRep.getSearchPicturesCount(so, tags);
     }
+
 }

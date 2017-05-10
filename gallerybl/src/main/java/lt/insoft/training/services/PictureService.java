@@ -48,46 +48,30 @@ public class PictureService {
 
     @Transactional
     public boolean removePictureByThumbnail(Long id) {
-        try {
-            Picture picture = this.getPictureInfoById(id);
-            picture.setTags(null);
-            if (pictureRep.removePicture(picture.getId())) {
-                return true;
-            }
-        } catch (NoResultException e) {
-            throw e;
+        Picture picture = this.getPictureInfoById(id);
+        picture.setTags(null);
+        if (pictureRep.removePicture(picture.getId())) {
+            return true;
         }
         return false;
     }
 
     public List<Thumbnail> getPictureThumbnail(int from, int amount, Long folderId) {
-        List<Picture> pictures = pictureRep.getPictures(from, amount, folderId);
-        List<Thumbnail> thumbnails = new ArrayList<Thumbnail>();
-        for (int i = 0; i < pictures.size(); i++) {
-            thumbnails.add(pictures.get(i).getThumbnail());
-        }
+        List<Thumbnail> thumbnails = pictureRep.getThumbnails(from, amount, folderId);
         return thumbnails;
     }
 
+    @Transactional
     public Picture getPictureInfoById(Long id) {
-        try {
-            Picture pic = pictureRep.findPictureByThumbnailId(id);
-            return pic;
-        } catch (NoResultException e) {
-            throw e;
-        }
-    }
-
-    public List<Tag> getPictureTags(Long id) {
-        Picture picture = pictureRep.findPictureByThumbnailId(id);
-        List<Tag> tags = picture.getTags();
-        return tags;
+        Picture pic = pictureRep.findPictureByThumbnailId(id);
+        return pic;
     }
 
     public int getPicturesCount(Long folderId) {
         return pictureRep.getPicturesCount(folderId);
     }
 
+    @Transactional
     public boolean updatePicture(Picture updatedPic, Long picId, List<String> tagList) {
         List<Tag> tags = new ArrayList<Tag>();
         for (int i = 0; i < tagList.size(); i++) {
@@ -101,11 +85,7 @@ public class PictureService {
             }
         }
         updatedPic.setTags(tags);
-        try {
-            pictureRep.updatePicture(updatedPic);
-        } catch (PersistenceException e) {
-            throw e;
-        }
+        pictureRep.updatePicture(updatedPic);
         return true;
     }
 

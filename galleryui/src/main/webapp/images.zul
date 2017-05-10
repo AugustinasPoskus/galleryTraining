@@ -76,17 +76,17 @@
             </customModal>
             <customModal title="@load(vm.selectedPicture.name, after='open')" type="picture"
                     show = "@load('false', after={'close'})">
-                <x:div class="modal-body" visible="@bind(vm.selectedPicture.name eq null ? false : true)">
-                    <image id="image-gallery-image" sclass="enlargeImageModalSource"
-                       content="@load(vm.selectedPicture.pictureData.data , after='open') @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"/>
-                </x:div>
-                <x:div visible="@bind(vm.selectedPicture.name eq null ? true : false)">
+                <x:div visible="@bind(vm.selectedPicture eq null ? true : false)">
                     <x:div class="modal-body">
                         <label value="Picture was already deleted, please reload page and repeat your action again!"></label>
                     </x:div>
                     <x:div class="modal-footer">
                         <x:button type="button" class="btn btn-default" onClick="@command('close')">Close</x:button>
                     </x:div>
+                </x:div>
+                <x:div class="modal-body" visible="@bind(vm.selectedPicture eq null ? false : true)">
+                    <image id="image-gallery-image" sclass="enlargeImageModalSource"
+                       content="@load(vm.selectedPicture.pictureData.data , after='open') @converter('lt.insoft.training.viewModel.utils.ImageToZkImageConverter')"/>
                 </x:div>
             </customModal>
             <customModal type="information" title="@load(vm.selectedPicture eq null ? null : 'Image information!', after='setImageInformation')">
@@ -203,8 +203,7 @@
                             <x:div>
                                 <button label="Upload Image"
                                         upload="true,maxsize=10000,multiple=false"
-                                        onUpload="@command('doUploadFile', file=event.media) @save('', after='doUploadFile') @validator(vm.uploadValidator,
-                        upload=vm.pictureData, message='Please upload a picture!')"/>
+                                        onUpload="@command('doUploadFile', file=event.media)"/>
                                 <label id="pictureUpload" value="@bind(vm.fileName)"/>
                             </x:div>
                             <label sclass="error block" value="@bind(vmsgs['pictureUpload'])"/>
@@ -212,7 +211,7 @@
                     </div>
                 </x:div>
                 <x:div class="modal-footer">
-                    <button label="Submit" sclass="btn btn-default" onClick="@command('add')"/>
+                    <button label="Submit" sclass="btn btn-default" onClick="@command(vm.pictureData eq null? '' : 'add')"/>
                     <x:button type="button" class="btn btn-default" onClick="@command('undo')"
                               data-dismiss="modal">Close
                     </x:button>
